@@ -11,7 +11,7 @@ class Display extends Component{
     <div className="Display">
         <img src={logo} className="Body-logo" alt="logo" />
         <p>
-          This is a Display!
+          This is a Display3!
         </p>
     </div>
     );

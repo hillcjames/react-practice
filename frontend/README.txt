@@ -20,7 +20,10 @@ npm install pm2 -g
 npm install
 
 # Run with node (locally, testing)
-node wherever/whatever.js
+npm start
 
 # Run with pm2 (production)
 pm2 start wherever/whatever.js
+
+
+sudo apt-get install node-typescript
