@@ -1,10 +1,11 @@
 .Display {
     width: 85%;
     height: 100%;
-    /* min-height: 50vh; */
     text-align: left;
     background-color: #282c34;
     justify-content: left;
     font-size: calc(10px + 2vmin);
     color: white;
+    overflow: auto;
+    /* outline: solid black; */
 }

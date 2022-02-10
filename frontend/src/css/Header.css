@@ -1,11 +1,12 @@
 .Header {
+  height: 10vh;
   text-align: left;
   width: 100%;
   margin-top: 0;
 }
 
 .Header-logo {
-  height: 20vmin;
+  height: 10vmin;
   pointer-events: none;
 }
 
@@ -17,7 +18,6 @@
 
 .Header-header {
   background-color: #282c34;
-  min-height: 10vh;
   display: flex;
   flex-direction: row;
   align-items: left;

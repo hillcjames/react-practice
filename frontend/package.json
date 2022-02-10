@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@blueprintjs/core": "^3.52.0",
         "@testing-library/jest-dom": "^5.16.1",
         "@testing-library/react": "^12.1.2",
         "@testing-library/user-event": "^13.5.0",
@@ -19,12 +20,14 @@
         "web-vitals": "^2.1.2"
     },
     "devDependencies": {
+        "@types/lodash": "^4.14.178",
+        "@types/uuid": "^8.3.4",
         "axios": "^0.24.0",
         "react-scripts": "^5.0.0",
         "tsconfig-paths": "^3.12.0"
     },
     "watch": {
-      "build": "build"
+        "build": "build"
     },
     "scripts": {
         "start": "react-scripts start",
