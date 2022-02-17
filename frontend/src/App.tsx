@@ -1,17 +1,28 @@
-import * as React from "react";
+import React, { Component, useContext, useEffect, useState } from "react";
 
-import './css/App.css';
 import Header from './components/Header';
 import Body from './components/Body';
-import {createModel} from './util'
 
-export const ModelContext = React.createContext(createModel())
+import { StateProvider, createModelContext } from "./contexts"
+
+import './css/App.css';
+
+
+export const ModelContext = createModelContext();
+
 
 const _App: React.FC<{}> = () => {
+
+    useEffect(() => {
+        console.log("Updating App!!")
+    });
+
     return (
         <div className="App">
-            <Header/>
-            <Body/>
+            <StateProvider>
+                <Header/>
+                <Body/>
+            </StateProvider>
         </div>
     );
 }

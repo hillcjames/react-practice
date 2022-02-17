@@ -1,14 +1,9 @@
 import { isArray } from "lodash";
 // import { default as _uuid } from "uuid/v4";
 import { v4 as _uuid } from 'uuid';
-
-import { Model } from "../types/Model";
-
+import { BehaviorSubject, Observable } from "rxjs";
 
 
-export function createModel(): Model {
-    return new Model();
-}
 
 
 export function getTime(): Date {
@@ -17,11 +12,32 @@ export function getTime(): Date {
 
 
 
-
-
 export function uuid(): string {
     return _uuid();
 }
+
+
+
+
+export type BehaviorObservable<T> = Observable<T> & {
+    readonly value: T;
+};
+
+export type BehaviorFactory<T> = () => BehaviorObservable<T>;
+
+export function asBehavior<T>(behaviorSubject: BehaviorSubject<T>): BehaviorObservable<T> {
+    return behaviorSubject as BehaviorObservable<T>;
+}
+
+export function asObservable<T>(observable: Observable<T>): Observable<T> {
+    return observable as Observable<T>;
+}
+
+
+
+
+
+
 
 export type TypeGuard<T> = (value: unknown) => value is T;
 
