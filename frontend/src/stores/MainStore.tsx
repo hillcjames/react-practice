@@ -31,6 +31,14 @@ export class MainStore {
     showSolarDisplay = () => this.isSolarDisplayVisible$.next(true);
     hideSolarDisplay = () => this.isSolarDisplayVisible$.next(false);
 
+
+    private readonly canvasWidth$ = new BehaviorSubject(0);
+    private readonly canvasHeight$ = new BehaviorSubject(0);
+    canvasWidth = () => asBehavior(this.canvasWidth$);
+    canvasHeight = () => asBehavior(this.canvasHeight$);
+    updateCanvasWidth = (newNum: number) => this.canvasWidth$.next(newNum);
+    updateCanvasHeight = (newNum: number) => this.canvasHeight$.next(newNum);
+
 }
 
 export const mainStore = new MainStore();

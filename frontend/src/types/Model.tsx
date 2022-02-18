@@ -19,7 +19,7 @@ export type ModelState = {
 }
 export type SolarModelMethods = {
     runTick: () => void;
-    addPlanetoid: (newPlanetoid: Planetoid) => void;
+    addPlanetoid: () => void;
     removePlanetoid: (planetoidID: string) => void;
     getPlanetoid: (planetoidID: string) => void;
     getPlanetoids: () => void;

@@ -1,10 +1,11 @@
 import React, { Component, useContext, useEffect } from "react";
 
 import { Model } from "../types/Model";
-import { modelStore } from '../stores/ModelStore';
-import { useBehavior } from '../hooks/useBehavior';
+
 import Canvas from "./Canvas"
 import logo from '../icons/logo.svg';
+
+import '../css/SolarSystemDisplay.css';
 
 
 export interface SolarSystemDisplayProps {
@@ -12,9 +13,6 @@ export interface SolarSystemDisplayProps {
 }
 
 const _SolarSystemDisplay: React.FC<SolarSystemDisplayProps> = (props) => {
-
-    const planetCounter = useBehavior(modelStore.planetCounter);
-
 
     useEffect(() => {
         console.log("Updating solar!!")
@@ -24,9 +22,9 @@ const _SolarSystemDisplay: React.FC<SolarSystemDisplayProps> = (props) => {
         <div className="SolarSystemDisplay">
             <p>
               This is a solar system (eventually)
-              <Canvas/>
             </p>
             {props.model.state.numPlanets}
+            <Canvas model={props.model}/>
         </div>
     );
 }

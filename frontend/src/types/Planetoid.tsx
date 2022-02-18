@@ -10,11 +10,11 @@ export class Planetoid {
     mass: number;
     style: PlanetoidStyle;
 
-    constructor(_id: string) {
+    constructor(_id: string, x: number, y: number) {
         this.id = _id;
         this.radius = 1000;
-        this.pos = new Vector2d(0,0);
-        this.v = new Vector2d(0,0);
+        this.pos = new Vector2d(x, y);
+        this.v = new Vector2d(0, 0);
         this.mass = 1000;
         this.style = PlanetoidStyles.BLUE;
     }
@@ -23,4 +23,9 @@ export class Planetoid {
     public toString = () : string => {
         return `Planetoid (id: ${this.id})`;
     }
+}
+
+
+export function isPlanetoid(obj: any): obj is Planetoid {
+    return obj.mass !== undefined
 }

@@ -26,7 +26,6 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
 
     const [numPlanets, setNumPlanets] = useState(0);
 
-    const planetCounter = useBehavior(modelStore.planetCounter);
 
     const solarIsVisible = useBehavior(mainStore.isSolarDisplayVisible);
 
@@ -37,7 +36,7 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
 
     return (
         <div className="ToolPane">
-            <img src={logo} className="Body-logo" alt="logo" />
+            {/* <img src={logo} className="Body-logo" alt="logo" /> */}
             <p>
               This is a ToolPane!
             </p>
@@ -51,54 +50,16 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 }}
             /> */}
             <Button
-                text={"Update the global modelContext directly"}
-                data-element-id="toggle-display-button"
-                disabled={false}
-                onClick={() => {
-                    modelContext.addNewBody();
-                    modelContext.value += 1;
-                }}
-                icon="square"
-                minimal
-                small
-                title={"Update modelContext "}
-            />
-            <Button
                 text={"Update modelState via dispatcher"}
                 data-element-id="toggle-display-button"
                 disabled={false}
                 onClick={() => {
-                    props.model.dispatcher.addPlanetoid(new Planetoid("Test"));
+                    props.model.dispatcher.addPlanetoid();
                 }}
                 icon="square"
                 minimal
                 small
                 title={"Update modelState "}
-            />
-            <Button
-                text={"Basic state hook"}
-                data-element-id="toggle-display-button"
-                disabled={false}
-                onClick={() => {
-                    setNumPlanets(numPlanets + 1);
-                }}
-                icon="trending-up"
-                minimal
-                small
-                title={"Update modelState "}
-            />
-            <Button
-                text={"Check everything " + modelContext.value + " " + numPlanets + " " + props.model.state.numPlanets}
-                data-element-id="check-reponse-button"
-                disabled={false}
-                onClick={() => {
-                    console.log("Test");
-                    console.log(modelContext.value + " " + numPlanets + " " + solarIsVisible);
-                }}
-                icon="circle"
-                minimal
-                small
-                title={"Check response " + modelContext.value}
             />
             <Button
                 text={" Toggle display"}

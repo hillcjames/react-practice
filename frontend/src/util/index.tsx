@@ -16,7 +16,9 @@ export function uuid(): string {
     return _uuid();
 }
 
-
+export function getRandomInt(max: number): number {
+  return Math.floor(Math.random() * max);
+}
 
 
 export type BehaviorObservable<T> = Observable<T> & {

@@ -1,9 +1,12 @@
 import { useCallback, useMemo, useReducer, useState } from "react";
 
-import { Planetoid } from "../types/Planetoid";
+import { Planetoid, isPlanetoid } from "../types/Planetoid";
 import { ModelState, SolarModelMethods } from "../types/Model";
 import { getAPI } from "../apis/interface";
-import { getTime } from "../util";
+import { getTime, getRandomInt } from "../util";
+
+import { mainStore } from '../stores/MainStore';
+import { useBehavior } from '../hooks/useBehavior';
 
 
 const initialModelState: ModelState = {
@@ -12,6 +15,10 @@ const initialModelState: ModelState = {
 }
 
 export function useModel(): [ModelState, SolarModelMethods] {
+
+    const canvasWidth = useBehavior(mainStore.canvasWidth);
+    const canvasHeight = useBehavior(mainStore.canvasHeight);
+
     const actionTypes = {
         RUN_TICK: 'RUN_TICK',
         ADD_PLANETOID: 'ADD_PLANETOID',
@@ -35,8 +42,11 @@ export function useModel(): [ModelState, SolarModelMethods] {
                 // }];
                 return state;
             case actionTypes.ADD_PLANETOID:
+                if (isPlanetoid(action.param)) {
+                    return {numPlanets: state.numPlanets+1, planetList: [...state.planetList, action.param]};
+                }
                 // console.log("We here, before: " + action.param + " " + numPlanets + " " + state.numPlanets);
-                return {...state, numPlanets: state.numPlanets+1};
+                return state;
             default:
                 return state;
         }
@@ -57,7 +67,8 @@ export function useModel(): [ModelState, SolarModelMethods] {
         runTick: () => {
             dispatch({ type: actionTypes.RUN_TICK });
         },
-        addPlanetoid: (newPlanetoid: Planetoid) => {
+        addPlanetoid: () => {
+            let newPlanetoid: Planetoid = new Planetoid("Test", getRandomInt(canvasWidth), getRandomInt(canvasHeight));
             dispatch({ type: actionTypes.ADD_PLANETOID, param: newPlanetoid });
         },
         removePlanetoid: (planetoidID: string) => {

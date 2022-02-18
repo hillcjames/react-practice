@@ -1,30 +1,50 @@
-import React, { Component, useContext, useEffect, useRef, useLayoutEffect } from "react";
+import React, { Component, useContext, useEffect, useRef, useState, useLayoutEffect } from "react";
 
-import { modelStore } from '../stores/ModelStore';
+import { Model } from "../types/Model";
+import { Vector2d } from "../types/Vector2d";
+import { mainStore } from '../stores/MainStore';
 import { useBehavior } from '../hooks/useBehavior';
 
+
+import '../css/canvas.css';
+
 export interface CanvasProps {
-    // temp: number;
+    model: Model;
 }
 
 const _Canvas: React.FC<CanvasProps> = (props: CanvasProps) =>  {
     const initialValue = false;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
+    const canvasWidth = useBehavior(mainStore.canvasWidth);
+    const canvasHeight = useBehavior(mainStore.canvasHeight);
 
+    const [dimX, setDimX] = useState(0);
+    const [dimY, setDimY] = useState(0);
 
-    const draw = (ctx: any, frameCount: number) => {
+    const [B, setB] = useState(0);
+
+    const draw = (ctx: any, _frameCount: number) => {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
         ctx.fillStyle = '#000000'
-        ctx.beginPath()
-        ctx.arc(50, 100, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI)
-        // ctx.arc(50, 100, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI * (props.temp / 180))
-        ctx.fill()
+        for (let planetoid of props.model.state.planetList) {
+            ctx.beginPath()
+            ctx.arc(planetoid.pos.x, planetoid.pos.y, 1+1*Math.sin(_frameCount*0.01)**2, 0, 2*Math.PI)
+            // ctx.arc(50, 100, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI * (props.temp / 180))
+            ctx.fill()
+        }
+        setDimX(ctx.canvas.width);
+        setDimY(ctx.canvas.height);
+
     }
 
+    useEffect (() => {
+        mainStore.updateCanvasWidth(dimX);
+        mainStore.updateCanvasHeight(dimY);
+
+    }, [dimX, dimY]);
+
     useLayoutEffect(() => {
-
-
         const canvas = canvasRef.current;
         if (canvas != null) {
             const context = canvas.getContext('2d');
@@ -33,19 +53,53 @@ const _Canvas: React.FC<CanvasProps> = (props: CanvasProps) =>  {
                 let animationFrameId: any;
                 //Our draw came here
                 const render = () => {
-                    frameCount++
-                    draw(context, frameCount)
-                    animationFrameId = window.requestAnimationFrame(render)
+                    frameCount++;
+                    draw(context, frameCount);
+                    // setB(prevB => B+1);
+                    animationFrameId = window.requestAnimationFrame(render);
                 }
                 render()
 
                 return () => {
-                    window.cancelAnimationFrame(animationFrameId)
+                    window.cancelAnimationFrame(animationFrameId);
                 }
             }
         }
 
     }, [draw]);
+
+
+
+    function resizeCanvas(canvas: HTMLCanvasElement) {
+        const { width, height } = canvas.getBoundingClientRect()
+
+        if (canvas.width !== width || canvas.height !== height) {
+            const { devicePixelRatio:ratio=1 } = window;
+            const context = canvas.getContext('2d');
+            if (context != null) {
+                canvas.width = width*ratio;
+                canvas.height = height*ratio;
+                context.scale(ratio, ratio);
+                return true
+            }
+        }
+
+        return false
+      }
+
+// https://medium.com/@pdx.lucasm/canvas-with-react-js-32e133c05258
+// The fuck are these?
+    // const predraw = (context, canvas) => {
+    //     context.save()
+    //     resizeCanvas(canvas)
+    //     const { width, height } = context.canvas
+    //     context.clearRect(0, 0, width, height)
+    // }
+    //
+    // const postdraw = () => {
+    //     index++
+    //     ctx.restore()
+    // }
 
 
     // const draw1 = (ctx: any) => {
@@ -71,7 +125,7 @@ const _Canvas: React.FC<CanvasProps> = (props: CanvasProps) =>  {
     //
     // }, [draw1]);
 
-    return <canvas ref={canvasRef} {...props}/>
+    return <canvas className="Canvas" ref={canvasRef} {...props}/>
 }
 
 const Canvas = React.memo(_Canvas);
