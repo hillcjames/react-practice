@@ -20,6 +20,14 @@ export function getRandomInt(max: number): number {
   return Math.floor(Math.random() * max);
 }
 
+export function isValidNumber(n: any): n is number {
+    return n !== undefined && typeof n == 'number' && !isNaN(n) && isFinite(n);
+}
+
+export function asTwoDigitStr(n: number) {
+    return n.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false})
+}
+
 
 export type BehaviorObservable<T> = Observable<T> & {
     readonly value: T;

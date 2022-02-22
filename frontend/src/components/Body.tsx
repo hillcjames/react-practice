@@ -9,7 +9,7 @@ import { modelStore } from '../stores/ModelStore';
 
 
 const _Body: React.FC<{}> = () => {
-
+    
     const [solarModelState, solarModel] = useModel();
     const model: Model = {
         state: solarModelState,

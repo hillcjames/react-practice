@@ -26,7 +26,6 @@ export class MainStore {
     // };
 
     private readonly isSolarDisplayVisible$ = new BehaviorSubject(true);
-
     isSolarDisplayVisible = () => asBehavior(this.isSolarDisplayVisible$);
     showSolarDisplay = () => this.isSolarDisplayVisible$.next(true);
     hideSolarDisplay = () => this.isSolarDisplayVisible$.next(false);
@@ -38,6 +37,15 @@ export class MainStore {
     canvasHeight = () => asBehavior(this.canvasHeight$);
     updateCanvasWidth = (newNum: number) => this.canvasWidth$.next(newNum);
     updateCanvasHeight = (newNum: number) => this.canvasHeight$.next(newNum);
+
+
+    private readonly solarDataIsLoading$ = new BehaviorSubject(true);
+    solarDataIsLoading = () => asBehavior(this.solarDataIsLoading$);
+    setSolarDataLoading = (loading: boolean) => this.solarDataIsLoading$.next(loading);
+
+    private readonly solarDataLoadFailure$ = new BehaviorSubject(false);
+    solarDataLoadFailure = () => asBehavior(this.solarDataLoadFailure$);
+    setSolarDataLoadFailure = (failed: boolean) => this.solarDataLoadFailure$.next(failed);
 
 }
 

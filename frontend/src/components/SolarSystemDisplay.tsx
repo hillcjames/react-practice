@@ -20,11 +20,10 @@ const _SolarSystemDisplay: React.FC<SolarSystemDisplayProps> = (props) => {
 
     return (
         <div className="SolarSystemDisplay">
-            <p>
-              This is a solar system (eventually)
-            </p>
-            {props.model.state.numPlanets}
             <Canvas model={props.model}/>
+            <p>
+              Solar system population: {props.model.state.planetoidList.length}
+            </p>
         </div>
     );
 }

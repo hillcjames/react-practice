@@ -1,6 +1,7 @@
 import React, { Component, useContext, useEffect, useState } from "react";
 import { Button } from "@blueprintjs/core";
 
+import BasicDataTableDisplay from './BasicDataTableDisplay';
 import { useToggleable } from "../hooks/useToggleable";
 import { useBehavior } from '../hooks/useBehavior';
 import { useModel } from '../hooks/useModel';
@@ -23,8 +24,6 @@ export interface ToolPaneProps {
 const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
     const modelContext = useContext(ModelContext);
     const sendRequestButton = useToggleable(true);
-
-    const [numPlanets, setNumPlanets] = useState(0);
 
 
     const solarIsVisible = useBehavior(mainStore.isSolarDisplayVisible);
@@ -55,12 +54,18 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 disabled={false}
                 onClick={() => {
                     props.model.dispatcher.addPlanetoid();
+                    props.model.dispatcher.addPlanetoid();
+                    props.model.dispatcher.addPlanetoid();
+                    props.model.dispatcher.addPlanetoid();
+                    props.model.dispatcher.addPlanetoid();
+                    props.model.dispatcher.addPlanetoid();
                 }}
                 icon="square"
                 minimal
                 small
                 title={"Update modelState "}
             />
+
             <Button
                 text={" Toggle display"}
                 data-element-id="toggle-display-button"
@@ -78,6 +83,19 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 small
                 title={"Toggle display"}
             />
+            <Button
+                text={"Advance sim"}
+                data-element-id="toggle-display-button"
+                disabled={false}
+                onClick={() => {
+                    props.model.dispatcher.runTick();
+                }}
+                icon="refresh"
+                minimal
+                small
+                title={"Advance sim"}
+            />
+            <BasicDataTableDisplay model={props.model}/>
         </div>
     );
 }
