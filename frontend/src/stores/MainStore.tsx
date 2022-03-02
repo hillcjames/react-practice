@@ -1,9 +1,10 @@
 import { BehaviorSubject } from "rxjs";
-import { asBehavior } from "../util";
+import { asBehavior, BehaviorObservable } from "../util";
 
 // import { themeApi } from "../api/clients/ThemeAPI";
 // import { DARK_THEME } from "../constants";
 // import { isBlank } from "../utility";
+
 
 // think up a better name sometime. This is a store for navigation, what screen you're on, what panels are showing.
 export class MainStore {
@@ -31,13 +32,12 @@ export class MainStore {
     hideSolarDisplay = () => this.isSolarDisplayVisible$.next(false);
 
 
-    private readonly canvasWidth$ = new BehaviorSubject(0);
-    private readonly canvasHeight$ = new BehaviorSubject(0);
-    canvasWidth = () => asBehavior(this.canvasWidth$);
-    canvasHeight = () => asBehavior(this.canvasHeight$);
-    updateCanvasWidth = (newNum: number) => this.canvasWidth$.next(newNum);
-    updateCanvasHeight = (newNum: number) => this.canvasHeight$.next(newNum);
-
+    private readonly universeWidth$ = new BehaviorSubject(400);
+    private readonly universeHeight$ = new BehaviorSubject(200);
+    universeWidth = () => asBehavior(this.universeWidth$);
+    universeHeight = () => asBehavior(this.universeHeight$);
+    updateUniverseWidth = (newNum: number) => this.universeWidth$.next(newNum);
+    updateUniverseHeight = (newNum: number) => this.universeHeight$.next(newNum);
 
     private readonly solarDataIsLoading$ = new BehaviorSubject(true);
     solarDataIsLoading = () => asBehavior(this.solarDataIsLoading$);

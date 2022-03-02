@@ -1,4 +1,5 @@
 import React, { Component, useContext, useEffect, useRef, useState, useLayoutEffect } from "react";
+import Sketch from "react-p5";
 
 import { Model } from "../types/Model";
 import { Vector2d } from "../types/Vector2d";
@@ -9,16 +10,13 @@ import { asTwoDigitStr } from "../util";
 
 import '../css/canvas.css';
 
-export interface CanvasProps {
+export interface SimpleCanvasProps {
     model: Model;
 }
 
-const _Canvas: React.FC<CanvasProps> = (props: CanvasProps) =>  {
+const _SimpleCanvas: React.FC<SimpleCanvasProps> = (props: SimpleCanvasProps) =>  {
     const initialValue = false;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-    const canvasWidth = useBehavior(mainStore.canvasWidth);
-    const canvasHeight = useBehavior(mainStore.canvasHeight);
 
     const [dimX, setDimX] = useState(0);
     const [dimY, setDimY] = useState(0);
@@ -34,26 +32,31 @@ const _Canvas: React.FC<CanvasProps> = (props: CanvasProps) =>  {
         let deadStyle = '#000000';
 
         let offset = new Vector2d(0,0);
-        for (let planetoid of props.model.state.planetoidList) {
+        for (let planet of props.model.state.planets) {
             ctx.fillStyle = '#000000';
-            if (!planetoid.dead) {
+            if (!planet.dead) {
                 ctx.fillStyle = '#' + "4016F2";
             }
             ctx.beginPath()
-            // ctx.arc(planetoid.pos.x, planetoid.pos.y, 1+1*Math.sin(_frameCount*0.01)**2, 0, 2*Math.PI)
-            ctx.arc(planetoid.pos.x * scale + dimX/2, planetoid.pos.y * scale + dimY/2, planetoid.radius, 0, 2*Math.PI);
+            // ctx.arc(planet.pos.x, planet.pos.y, 1+1*Math.sin(_frameCount*0.01)**2, 0, 2*Math.PI)
+            ctx.arc(planet.pos.x * scale + dimX/2, planet.pos.y * scale + dimY/2, planet.radius, 0, 2*Math.PI);
             // +1*Math.sin(_frameCount*0.01)**2
             // ctx.arc(50, 100, 20*Math.sin(frameCount*0.05)**2, 0, 2*Math.PI * (props.temp / 180))
             ctx.fill()
 
-            for (let i = 1; i < planetoid.prevLocs.length; i++) {
-                let prevP = planetoid.prevLocs[i-1];
-                let p = planetoid.prevLocs[i];
+            for (let i = 1; i < planet.prevLocs.length; i++) {
+                let prevP = planet.prevLocs[i-1];
+                let p = planet.prevLocs[i];
+                // console.log("Drawing: " + planet.pos + " " + planet.prevLocs.length + " " + prevP + " " + p);
                 ctx.beginPath();
-                ctx.moveTo(prevP.x, prevP.y);
-                ctx.lineTo(p.x, p.y);
+                ctx.moveTo(prevP.x * scale + dimX/2, prevP.y * scale + dimY/2);
+                ctx.lineTo(p.x * scale + dimX/2, p.y * scale + dimY/2);
                 ctx.stroke();
             }
+
+            // if (planet.name != "Sol" && planet.prevLocs.length == 6) {
+            //     throw Error("test")
+            // }
         }
         setDimX(ctx.canvas.width);
         setDimY(ctx.canvas.height);
@@ -61,16 +64,12 @@ const _Canvas: React.FC<CanvasProps> = (props: CanvasProps) =>  {
     }
 
     useEffect (() => {
-        console.log("Canvas is updating on the react-side");
-    });
-
-    useEffect (() => {
-        mainStore.updateCanvasWidth(dimX);
-        mainStore.updateCanvasHeight(dimY);
+        mainStore.updateUniverseWidth(dimX);
+        mainStore.updateUniverseHeight(dimY);
 
         // let solPos = new Vector2d(0,0);
         // Assume sun is always at 0,0.
-        // for (let planetoid of props.model.state.planetoidList) {
+        // for (let planet of props.model.state.planets) {
         //     // find furthest dims?
         // }
 
@@ -80,6 +79,7 @@ const _Canvas: React.FC<CanvasProps> = (props: CanvasProps) =>  {
     // Eventually refactor so that it'll keep running even when you aren't looking, with a pause button separate from the render cycle.
     // So like, you could add a new planet and move some around and have it render, without the simulation stepping forward.
     useLayoutEffect(() => {
+        console.log("Canvas useLayoutEffect");
         const canvas = canvasRef.current;
         if (canvas != null) {
             const context = canvas.getContext('2d');
@@ -90,6 +90,7 @@ const _Canvas: React.FC<CanvasProps> = (props: CanvasProps) =>  {
                 const render = () => {
                     frameCount++;
                     draw(context, frameCount);
+                    props.model.dispatcher.runTick();
                     // setB(prevB => B+1);
                     animationFrameId = window.requestAnimationFrame(render);
                 }
@@ -162,5 +163,5 @@ const _Canvas: React.FC<CanvasProps> = (props: CanvasProps) =>  {
     return <canvas className="Canvas" ref={canvasRef} {...props}/>
 }
 
-const Canvas = React.memo(_Canvas);
-export default Canvas;
+const SimpleCanvas = React.memo(_SimpleCanvas);
+export default SimpleCanvas;

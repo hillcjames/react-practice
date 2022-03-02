@@ -10,7 +10,9 @@ export function getTime(): Date {
     return new Date();
 }
 
-
+export function getMilliseconds(): number {
+    return Date.now();
+}
 
 export function uuid(): string {
     return _uuid();
@@ -26,6 +28,12 @@ export function isValidNumber(n: any): n is number {
 
 export function asTwoDigitStr(n: number) {
     return n.toLocaleString('en-US', {minimumIntegerDigits: 2, useGrouping:false})
+}
+
+export function delay(delay: number) {
+    return new Promise(r => {
+        setTimeout(r, delay);
+    })
 }
 
 

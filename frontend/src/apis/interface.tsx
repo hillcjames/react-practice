@@ -1,5 +1,5 @@
 
-import { PlanetoidAPI } from "./PlanetoidAPI";
+import { PlanetAPI } from "./PlanetAPI";
 
 export interface Type<T> extends Function {
     // tslint:disable-next-line:callable-types
@@ -19,8 +19,8 @@ export interface Gateway {
     // delete<T>(url: string, data?: any, options?: RequestOptions<T>): Promise<Response<T>>;
 }
 
-export function getAPI(): PlanetoidAPI {
-    return PlanetoidAPI.instance();
+export function getAPI(): PlanetAPI {
+    return PlanetAPI.instance();
 }
 
 export interface RequestOptions<T> {

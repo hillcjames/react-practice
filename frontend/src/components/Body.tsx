@@ -3,27 +3,20 @@ import React, { Component, useContext, useEffect, useState } from "react";
 import '../css/Body.css';
 import ToolPane from './ToolPane';
 import Display from './Display';
-import { useModel } from "../hooks/useModel";
 import { ModelState, Model } from "../types/Model";
 import { modelStore } from '../stores/ModelStore';
 
 
-const _Body: React.FC<{}> = () => {
-    
-    const [solarModelState, solarModel] = useModel();
-    const model: Model = {
-        state: solarModelState,
-        dispatcher: solarModel
-    }
+export interface BodyProps {
+}
 
-    useEffect(() => {
-        console.log("Updating Body!!")
-    });
+const _Body: React.FC<BodyProps> = (props) => {
+
 
     return (
     <div className="Body">
-        <ToolPane model={model} />
-        <Display model={model} />
+        <ToolPane />
+        <Display />
     </div>
     );
 }

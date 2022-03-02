@@ -1,4 +1,4 @@
-import React, { Component, useContext, useEffect  } from "react";
+import React, { Component, useContext, useEffect, useState  } from "react";
 
 import logo from '../icons/logo.svg';
 import '../css/Body.css';
@@ -8,12 +8,12 @@ import SolarSystemDisplay from './SolarSystemDisplay';
 import BasicDataTableDisplay from './BasicDataTableDisplay';
 import { mainStore } from '../stores/MainStore';
 import { useBehavior } from '../hooks/useBehavior';
-import { Model } from "../types/Model";
-import { modelStore } from '../stores/ModelStore';
+import { Model, ModelState } from "../types/Model";
+import { Planet } from "../types/Planet";
+import { modelStore, initialModelState } from '../stores/ModelStore';
 
 
 export interface DisplayProps {
-    model: Model;
 }
 
 const _Display: React.FC<DisplayProps> = (props: DisplayProps) => {
@@ -22,15 +22,30 @@ const _Display: React.FC<DisplayProps> = (props: DisplayProps) => {
     const solarDataIsLoading = useBehavior(mainStore.solarDataIsLoading);
     const solarDataLoadFailure = useBehavior(mainStore.solarDataLoadFailure);
 
+    const [periodicModelState, setPeriodicModelState] = useState(initialModelState);
+    const newSimData = useBehavior(modelStore.newSimData);
+    const modelState = useBehavior(modelStore.modelState);
     useEffect(() => {
-        console.log("Updating Display!!")
-    });
+        setPeriodicModelState({...modelState});
+    }, [newSimData]);
+
+
+
 
     return (
     <div className="Display">
         {/* <TestDisplay/> */}
-        {isSolarOpen ? <SolarSystemDisplay model={props.model}/> : null }
-        {!isSolarOpen ? <BasicDataTableDisplay model={props.model}/> : null }
+        {/* {isSolarOpen ? <SolarSystemDisplay /> : null } */}
+        <div  style={{display: isSolarOpen ? "block" : "none"}}>
+            <SolarSystemDisplay />
+        </div>
+        {/* {!isSolarOpen ? <BasicDataTableDisplay model={modelState}/> : null } */}
+        {/* <BasicDataTableDisplay/> */}
+        <BasicDataTableDisplay model={periodicModelState} rowClickCallback={
+            (e: any, row: any) => {
+                modelStore.updateCenterPointOfRef(row.getData().pos);
+            }
+        }/>
     </div>
     );
 }

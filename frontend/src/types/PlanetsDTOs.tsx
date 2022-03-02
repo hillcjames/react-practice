@@ -1,5 +1,5 @@
 
-export interface PlanetoidDTO {
+export interface PlanetDTO {
     namespace: string; // ?
     path: string; // ?
 
@@ -14,10 +14,10 @@ export interface PlanetoidDTO {
 }
 
 
-export interface PlanetoidGetResponse {
+export interface PlanetGetResponse {
     success: boolean;
     data: string;
-    // data: PlanetoidDTO[];
+    // data: PlanetDTO[];
 }
 //
 //

@@ -7,20 +7,18 @@ import "react-tabulator/lib/styles.css"; // default theme
 import "react-tabulator/css/tabulator_midnight.min.css";
 
 
-
-import { Model } from "../types/Model";
-import { Planetoid } from "../types/Planetoid";
+import { ModelState } from "../types/Model";
+import { Planet } from "../types/Planet";
 import { Vector2d } from "../types/Vector2d";
 
-import Canvas from "./Canvas"
-import logo from '../icons/logo.svg';
 
 import '../css/BasicDataTableDisplay.css';
 // import "~@blueprintjs/table/lib/css/table.css";
 
 
 export interface BasicDataTableDisplayProps {
-    model: Model
+    model: ModelState;
+    rowClickCallback: (e: any, row: any) => void;
 }
 
 
@@ -28,12 +26,30 @@ export interface BasicDataTableDisplayProps {
 
 const _BasicDataTableDisplay: React.FC<BasicDataTableDisplayProps> = (props) => {
 
-    const [ref, setRef] = useState(null);
+    const [ref, setRef] = useState<any>(null);
 
     let customFormatter = (cell: any, formatterParams: any, onRendered: any) => {
         let pos: Vector2d = cell.getValue();
         return pos.x.toFixed(1) + " " + pos.y.toFixed(1);
     }
+
+    useEffect(() => {
+        // console.log("Updating _BasicDataTableDisplay useEffect ");
+
+        // TODO replaceData and updateOrAddData cause lag, even with a small number of table entries. What gives?
+        if (ref !== null && ref.current !== null) {
+            ref.current.updateData(props.model.planets);
+            if (ref.current.getRows().length < props.model.planets.length) {
+                ref.current.updateOrAddData(props.model.planets);
+            }
+
+        }
+    });
+
+    // useEffect(() => {
+    //     console.log("Updating _BasicDataTableDisplay useEffect ");
+    // });
+
 
     const columns = [
         { title: "Name", field: "name", width: 30 },
@@ -46,33 +62,32 @@ const _BasicDataTableDisplay: React.FC<BasicDataTableDisplayProps> = (props) => 
         { title: "Dead", field: "dead" },
     ];
 
-    useEffect(() => {
-        console.log("Updating table!!")
-    });
+    // useEffect(() => {
+    //     console.log("Updating table!!")
+    // });
 
     // const nameCellRenderer = (rowIndex: number) => {
-    //     let p: Planetoid = props.model.state.planetoidList[rowIndex];
+    //     let p: Planet = props.model.state.planets[rowIndex];
     //     return (<Cell>{p.id}</Cell>);
     // }
     const posCellRenderer = (rowIndex: number) => {
         // <Cell>{`€${(rowIndex * 10 * 0.85).toFixed(2)}`}</Cell>
-        let p: Planetoid = props.model.state.planetoidList[rowIndex];
+        let p: Planet = props.model.planets[rowIndex];
         return (<div>{p.pos}</div>);
     }
 
     return (
         <div className="BasicDataTableDisplay">
-            {/* <Table numRows={props.model.state.planetoidList.length}>
+            {/* <Table numRows={props.model.state.planets.length}>
                 <Column name="Name" cellRenderer={nameCellRenderer}/>
                 <Column name="Pos" cellRenderer={posCellRenderer} />
             </Table> */}
             <ReactTabulator
                       onRef={(ref) => (setRef(ref))}
                       columns={columns}
-                      data={props.model.state.planetoidList}
+                      data={props.model.planets}
                       events={{
-                        rowClick: (temp: any) => {}
-                      }}
+                        rowClick: props.rowClickCallback}}
                     />
                     {/* options={options} */}
                     {/* data-custom-attr="test-custom-attribute"

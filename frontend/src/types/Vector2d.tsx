@@ -27,6 +27,10 @@ export class Vector2d {
         return new Vector2d(invX, invY);
     }
 
+    copy(): Vector2d {
+        return new Vector2d(this.x, this.y);
+    }
+
     public static unitVectorFromSourceToDest(source: Vector2d, dest: Vector2d): Vector2d {
         let magnitude = Vector2d.squaredDist(source, dest);
         if (magnitude === 0) {
@@ -41,6 +45,10 @@ export class Vector2d {
 
     public static added(v1: Vector2d, v2: Vector2d): Vector2d {
         return new Vector2d(v1.x + v2.x, v1.y + v2.y);
+    }
+
+    public static sub(v1: Vector2d, v2: Vector2d): Vector2d {
+        return new Vector2d(v1.x - v2.x, v1.y - v2.y);
     }
 
     public static scaled(v1: Vector2d, scale: number): Vector2d {
