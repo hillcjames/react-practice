@@ -58,10 +58,11 @@ const _App: React.FC<{}> = () => {
         //     new Planet("Delt", -50, 0, 100, 0, 1.25),
         //     new Planet("Eps", -80, 0, 100, 0, 0.85)
         // ];
+        let sol: Planet = new Planet("Sol", 0, 0, 100000);
         let initialPlanetList: Planet[] = [
-            new Planet("Sol", 0, 0, 100000),
-            new Planet("Alph", -10, 0, 100, 0, 3.9),
-            new Planet("Bet", -20, 0, 100, 0, 3.0),
+            sol,
+            new Planet("Alph", -10, 0, 100, 0, 4),
+            new Planet("Bet", -20, 0, 100, 0, 3.2),
             new Planet("Gam", -20, 0, 1000, 0, 2.2),
             new Planet("Delt", -30, 0, 100, 0, 1.5),
             new Planet("Eps", -50, 0, 100, 0, 1.25),
@@ -73,6 +74,7 @@ const _App: React.FC<{}> = () => {
             new Planet("Endor", 174, 0, 1, 0, -0.97)
         ];
         modelStore.setPlanets(initialPlanetList);
+        modelStore.updateCenterPointOfRef(sol.pos);
         // dispatcher.setPlanets(initialPlanetList);
         mainStore.setSolarDataLoading(false);
         // mainStore.setSolarDataLoading(true);
