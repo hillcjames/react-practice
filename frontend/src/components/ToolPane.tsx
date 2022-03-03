@@ -1,5 +1,5 @@
 import React, { Component, useContext, useEffect, useState } from "react";
-import { Button } from "@blueprintjs/core";
+import { Button, Switch } from "@blueprintjs/core";
 
 import BasicDataTableDisplay from './BasicDataTableDisplay';
 import TestComponent from './TestComponent';
@@ -33,7 +33,9 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
 
     const universeWidth = useBehavior(mainStore.universeWidth);
     const universeHeight = useBehavior(mainStore.universeHeight);
-    //
+
+    const showTails = useBehavior(modelStore.showTails);
+
     // useEffect(() => {
     //     // console.log("Updating toolpane")
     //     setPeriodicModelState({...modelState});
@@ -56,7 +58,7 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 }}
             /> */}
             <Button
-                text={"Update modelState via dispatcher"}
+                text={"Add extra planets"}
                 data-element-id="add-planet-button"
                 disabled={false}
                 onClick={() => {
@@ -68,29 +70,31 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                     modelStore.addRandomPlanet(universeWidth, universeHeight);
                     modelStore.addRandomPlanet(universeWidth, universeHeight);
                 }}
-                icon="square"
+                icon="add"
                 minimal
                 small
-                title={"Update modelState "}
+                title={"Add extra planets"}
             />
 
+            <Switch label="Toggle display" checked={solarIsVisible} onChange={() => {
+                if (solarIsVisible) {
+                    mainStore.hideSolarDisplay();
+                }
+                else {
+                    mainStore.showSolarDisplay();
+                }
+            }} />
+            {/*
             <Button
                 text={" Toggle display"}
                 data-element-id="toggle-display-button"
                 disabled={false}
-                onClick={() => {
-                    if (solarIsVisible) {
-                        mainStore.hideSolarDisplay();
-                    }
-                    else {
-                        mainStore.showSolarDisplay();
-                    }
-                }}
+                onClick={}
                 icon="refresh"
                 minimal
                 small
                 title={"Toggle display"}
-            />
+            /> */}
             <Button
                 text={isPaused ? "Run Sim" : "Pause Sim"}
                 data-element-id="run-tick-button"
@@ -103,13 +107,13 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                         modelStore.pauseSimulation();
                     }
                 }}
-                icon="refresh"
+                icon={isPaused ? "play" : "pause"}
                 minimal
                 small
                 title={isPaused ? "Run Sim" : "Pause Sim"}
             />
             <Button
-                text={"Run Test"}
+                text={"Add -Y velocity"}
                 data-element-id="run-test-button"
                 disabled={false}
                 onClick={() => {
@@ -121,23 +125,24 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                         }
                     });
                 }}
-                icon="refresh"
+                icon="arrow-down"
                 minimal
                 small
-                title={"Run Test"}
+                title={"Add -Y velocity"}
             />
             <Button
-                text={"Add vec"}
+                text={"Add new planet"}
                 data-element-id="add-vec-button"
                 disabled={false}
                 onClick={() => {
                     modelStore.addRandomPlanet(universeWidth, universeHeight);
                 }}
-                icon="refresh"
+                icon="plus"
                 minimal
                 small
-                title={"Add vec"}
+                title={"Add new planet"}
             />
+            <Switch label="Toggle trails" checked={showTails} onChange={modelStore.toggleShowTails} />
             {/* <BasicDataTableDisplay model={periodicModelState}/> */}
         </div>
     );

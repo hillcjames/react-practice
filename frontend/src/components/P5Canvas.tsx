@@ -31,6 +31,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     const modelState = useBehavior(modelStore.modelState);
     const centerPointOfRef = useBehavior(modelStore.centerPointOfRef);
     const isSimPaused = useBehavior(modelStore.isSimPaused);
+    const showTails = useBehavior(modelStore.showTails);
 
 
     // useEffect(() => {
@@ -115,20 +116,22 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
         for (let planet of modelState.planets) {
             // ctx.fillStyle = '#000000';
             if (!planet.dead) {
-                // ctx.fillStyle = '#' + "4016F2";
-                let maxTrailWidth = planet.radius()*scale*0.6;
-                for (let i = 2; i < planet.prevLocs.length; i++) {
-                    let trailScalingFactor = i/planet.prevLocs.length;
-                    trailScalingFactor*=trailScalingFactor;
-                    trailScalingFactor*=trailScalingFactor;
-                    trailScalingFactor*=trailScalingFactor;
-                    p5.strokeWeight(0.15 + maxTrailWidth*trailScalingFactor);
-                    let p1 = planet.prevLocs[i-1];
-                    let p2 = planet.prevLocs[i];
-                    let prevR = planet.radius() > 10 ? planet.radius()/10 : 1;
-                    // p5.ellipse(prvLoc.x*scale + offset.x, prvLoc.y*scale + offset.y, prevR*scale, prevR*scale);
-                    p5.line(p1.x*scale + offset.x, p1.y*scale + offset.y, p2.x*scale + offset.x, p2.y*scale + offset.y,);
+                if (showTails) {
+                    let maxTrailWidth = planet.radius()*scale*0.6;
+                    for (let i = 2; i < planet.prevLocs.length; i++) {
+                        let trailScalingFactor = i/planet.prevLocs.length;
+                        trailScalingFactor*=trailScalingFactor;
+                        trailScalingFactor*=trailScalingFactor;
+                        trailScalingFactor*=trailScalingFactor;
+                        p5.strokeWeight(0.15 + maxTrailWidth*trailScalingFactor);
+                        let p1 = planet.prevLocs[i-1];
+                        let p2 = planet.prevLocs[i];
+                        let prevR = planet.radius() > 10 ? planet.radius()/10 : 1;
+                        // p5.ellipse(prvLoc.x*scale + offset.x, prvLoc.y*scale + offset.y, prevR*scale, prevR*scale);
+                        p5.line(p1.x*scale + offset.x, p1.y*scale + offset.y, p2.x*scale + offset.x, p2.y*scale + offset.y,);
+                    }
                 }
+
                 p5.strokeWeight(1);
                 p5.ellipse(planet.pos.x*scale + offset.x, planet.pos.y*scale + offset.y, planet.radius()*scale, planet.radius()*scale);
             }

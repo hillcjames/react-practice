@@ -31,7 +31,7 @@ export class Planet {
     }
 
     public radius = () : number => {
-        return Math.pow(this.mass, 1/4)/3;
+        return Math.pow(this.mass, 1/3)/8;
     }
 
     public toString = () : string => {

@@ -39,13 +39,11 @@ const _Display: React.FC<DisplayProps> = (props: DisplayProps) => {
         <div  style={{display: isSolarOpen ? "block" : "none"}}>
             <SolarSystemDisplay />
         </div>
-        {/* {!isSolarOpen ? <BasicDataTableDisplay model={modelState}/> : null } */}
-        {/* <BasicDataTableDisplay/> */}
-        <BasicDataTableDisplay model={periodicModelState} rowClickCallback={
+        {!isSolarOpen ? <BasicDataTableDisplay model={periodicModelState} rowClickCallback={
             (e: any, row: any) => {
                 modelStore.updateCenterPointOfRef(row.getData().pos);
             }
-        }/>
+        }/> : null }
     </div>
     );
 }

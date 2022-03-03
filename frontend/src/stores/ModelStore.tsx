@@ -86,7 +86,7 @@ export class ModelStore {
             return this.newSimData$;
         }
         this.lastPushedUpdate = currentTime;
-        return this.newSimData$.next(!this.newSimData$.getValue())
+        return this.newSimData$.next(!this.newSimData$.getValue());
     };
 
     private readonly physicsSpeed$ = new BehaviorSubject( 0.04 );
@@ -98,6 +98,9 @@ export class ModelStore {
         return this.physicsSpeed$.next(newSpeed);
     }
 
+    private readonly showTails$ = new BehaviorSubject(true);
+    showTails = () => asBehavior(this.showTails$);
+    toggleShowTails = () => this.showTails$.next(!this.showTails$.getValue());
 
 }
 
