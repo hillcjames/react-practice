@@ -29,7 +29,8 @@ const _Display: React.FC<DisplayProps> = (props: DisplayProps) => {
         setPeriodicModelState({...modelState});
     }, [newSimData]);
 
-
+    const showDeadPlanets = useBehavior(mainStore.showDeadPlanets);
+    const [selectedPlanetID, setSelectedPlanetID] = useState<string>("");
 
 
     return (
@@ -39,11 +40,16 @@ const _Display: React.FC<DisplayProps> = (props: DisplayProps) => {
         <div  style={{display: isSolarOpen ? "block" : "none"}}>
             <SolarSystemDisplay />
         </div>
-        {!isSolarOpen ? <BasicDataTableDisplay model={periodicModelState} rowClickCallback={
+        {/* {!isSolarOpen ? <BasicDataTableDisplay model={periodicModelState} */}
+        <BasicDataTableDisplay model={periodicModelState}
+             rowClickCallback={
             (e: any, row: any) => {
                 modelStore.updateCenterPointOfRef(row.getData().pos);
-            }
-        }/> : null }
+            }}
+            showDeadPlanets={showDeadPlanets}
+            selectedPlanetID={selectedPlanetID}
+            setSelectedPlanetID={setSelectedPlanetID}
+        />
     </div>
     );
 }

@@ -44,7 +44,8 @@ const _SolarSystemDisplay: React.FC<SolarSystemDisplayProps> = (props) => {
             {/* <SimpleCanvas model={props.model}/> */}
             <P5Canvas/>
             <div>
-              Solar system population: {headCount}, size: {universeWidth} {universeHeight}
+              Solar system population: {headCount}
+              {/* , size: {universeWidth} {universeHeight} */}
           </div>
         </div>
     );

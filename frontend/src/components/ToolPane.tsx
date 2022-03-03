@@ -1,5 +1,5 @@
 import React, { Component, useContext, useEffect, useState } from "react";
-import { Button, Switch } from "@blueprintjs/core";
+import { Button, Intent, Switch } from "@blueprintjs/core";
 
 import BasicDataTableDisplay from './BasicDataTableDisplay';
 import TestComponent from './TestComponent';
@@ -35,6 +35,9 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
     const universeHeight = useBehavior(mainStore.universeHeight);
 
     const showTails = useBehavior(modelStore.showTails);
+
+    const showDeadPlanets = useBehavior(mainStore.showDeadPlanets);
+
 
     // useEffect(() => {
     //     // console.log("Updating toolpane")
@@ -73,17 +76,10 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 icon="add"
                 minimal
                 small
+                intent={Intent.WARNING}
                 title={"Add extra planets"}
             />
 
-            <Switch label="Toggle display" checked={solarIsVisible} onChange={() => {
-                if (solarIsVisible) {
-                    mainStore.hideSolarDisplay();
-                }
-                else {
-                    mainStore.showSolarDisplay();
-                }
-            }} />
             {/*
             <Button
                 text={" Toggle display"}
@@ -110,6 +106,7 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 icon={isPaused ? "play" : "pause"}
                 minimal
                 small
+                intent={Intent.WARNING}
                 title={isPaused ? "Run Sim" : "Pause Sim"}
             />
             <Button
@@ -128,6 +125,7 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 icon="arrow-down"
                 minimal
                 small
+                intent={Intent.WARNING}
                 title={"Add -Y velocity"}
             />
             <Button
@@ -140,9 +138,21 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 icon="plus"
                 minimal
                 small
+                intent={Intent.WARNING}
                 title={"Add new planet"}
             />
             <Switch label="Toggle trails" checked={showTails} onChange={modelStore.toggleShowTails} />
+            <Switch label="Toggle display" checked={solarIsVisible} onChange={() => {
+                if (solarIsVisible) {
+                    mainStore.hideSolarDisplay();
+                }
+                else {
+                    mainStore.showSolarDisplay();
+                }
+            }} />
+            {/* <Switch label="List dead planets" checked={showDeadPlanets} onChange={() => {
+                    mainStore.setShowDeadPlanets(!showDeadPlanets);
+            }} /> */}
             {/* <BasicDataTableDisplay model={periodicModelState}/> */}
         </div>
     );

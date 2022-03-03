@@ -47,6 +47,9 @@ export class MainStore {
     solarDataLoadFailure = () => asBehavior(this.solarDataLoadFailure$);
     setSolarDataLoadFailure = (failed: boolean) => this.solarDataLoadFailure$.next(failed);
 
+    private readonly showDeadPlanets$ = new BehaviorSubject(true);
+    showDeadPlanets = () => asBehavior(this.showDeadPlanets$);
+    setShowDeadPlanets = (show: boolean) => this.showDeadPlanets$.next(show);
 }
 
 export const mainStore = new MainStore();
