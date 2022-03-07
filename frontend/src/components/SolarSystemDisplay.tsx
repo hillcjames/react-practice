@@ -1,13 +1,12 @@
 import React, { Component, useContext, useEffect, useState } from "react";
 
-import { Model, ModelState } from "../types/Model";
+import { ModelState } from "../types/Model";
 import { Planet } from "../types/Planet";
 
 import { mainStore } from '../stores/MainStore';
 import { modelStore } from '../stores/ModelStore';
 import { useBehavior } from '../hooks/useBehavior';
 
-import SimpleCanvas from "./SimpleCanvas"
 import P5Canvas from "./P5Canvas"
 import logo from '../icons/logo.svg';
 import { Vector2d } from "../types/Vector2d";
@@ -41,7 +40,6 @@ const _SolarSystemDisplay: React.FC<SolarSystemDisplayProps> = (props) => {
 
     return (
         <div className="SolarSystemDisplay">
-            {/* <SimpleCanvas model={props.model}/> */}
             <P5Canvas/>
             <div>
               Solar system population: {headCount}

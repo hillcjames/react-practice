@@ -1,6 +1,6 @@
 import React, { Component, useContext, useEffect, useState } from "react";
 
-import { ModelState, Model } from "../types/Model";
+import { ModelState } from "../types/Model";
 import { Vector2d } from "../types/Vector2d";
 import { Planet } from "../types/Planet";
 import { mainStore } from '../stores/MainStore';

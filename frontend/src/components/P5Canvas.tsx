@@ -100,15 +100,15 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     // }, []);
 
 
-    function getOffset(): Vector2d {
-        return new Vector2d(width/2 - planetOfReference.pos.x * scale, height/2 - planetOfReference.pos.y * scale)
+    function getOffset(referencePos: Vector2d): Vector2d {
+        return new Vector2d(width/2 - referencePos.x * scale, height/2 - referencePos.y * scale)
     }
 
     const render = (p5: p5Types) => {
         p5.background(0);
         p5.stroke(255);
 
-        let offset = getOffset();
+        let offset = getOffset(planetOfReference.pos);
 
         // Instead of making each planet keep track of its 100 previous points,
         // just save in system state the last hundred positions of all elements.
@@ -162,26 +162,77 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
         for (let planet of modelState.planets) {
             // ctx.fillStyle = '#000000';
             if (!planet.dead) {
-                if (showTails) {
-                    let maxTrailWidth = planet.radius()*scale*0.6;
-                    for (let i = 2; i < planet.prevLocs.length; i++) {
-                        let trailScalingFactor = i/planet.prevLocs.length;
-                        trailScalingFactor*=trailScalingFactor;
-                        trailScalingFactor*=trailScalingFactor;
-                        trailScalingFactor*=trailScalingFactor;
-                        p5.strokeWeight(0.15 + maxTrailWidth*trailScalingFactor);
-                        let p1 = planet.prevLocs[i-1];
-                        let p2 = planet.prevLocs[i];
-                        let prevR = planet.radius() > 10 ? planet.radius()/10 : 1;
-                        // p5.ellipse(prvLoc.x*scale + offset.x, prvLoc.y*scale + offset.y, prevR*scale, prevR*scale);
-                        p5.line(p1.x*scale + offset.x, p1.y*scale + offset.y, p2.x*scale + offset.x, p2.y*scale + offset.y,);
-                    }
-                }
+                // if (showTails) {
+                //     let maxTrailWidth = planet.radius()*scale*0.6;
+                //     for (let i = 2; i < planet.prevLocs.length; i++) {
+                //         let trailScalingFactor = i/planet.prevLocs.length;
+                //         trailScalingFactor*=trailScalingFactor;
+                //         trailScalingFactor*=trailScalingFactor;
+                //         trailScalingFactor*=trailScalingFactor;
+                //         p5.strokeWeight(0.15 + maxTrailWidth*trailScalingFactor);
+                //
+                //         let p1 = planet.prevLocs[i-1];
+                //         let p2 = planet.prevLocs[i];
+                //         let prevR = planet.radius() > 10 ? planet.radius()/10 : 1;
+                //         // p5.ellipse(prvLoc.x*scale + offset.x, prvLoc.y*scale + offset.y, prevR*scale, prevR*scale);
+                //         p5.line(p1.x*scale + offset.x, p1.y*scale + offset.y, p2.x*scale + offset.x, p2.y*scale + offset.y,);
+                //     }
+                // }
 
                 p5.strokeWeight(1);
                 p5.ellipse(planet.pos.x*scale + offset.x, planet.pos.y*scale + offset.y, planet.radius()*scale, planet.radius()*scale);
             }
         }
+
+
+        if (showTails) {
+            let prevHistorySlice = modelState.history[1];
+            for (let i = 2; i < modelState.history.length; i++) {
+
+
+                let historySlice = modelState.history[i];
+                let refPlanetPosThisSlice = historySlice.get(planetOfReference.id);
+                if (!refPlanetPosThisSlice) {
+                    continue;
+                }
+                let offsetThisSlice = getOffset(refPlanetPosThisSlice);
+
+
+                for (let [planetID, pos] of Array.from(historySlice.entries())) {
+                    // TODO change planets to a map
+                    let planet = modelState.planets.find(p => p.id ===planetID);
+                    if (!planet) {
+                        continue;
+                    }
+                    let maxTrailWidth = planet.radius()*scale*0.6;
+                    let trailScalingFactor = i/modelState.history.length;
+                    trailScalingFactor*=trailScalingFactor;
+                    trailScalingFactor*=trailScalingFactor;
+                    trailScalingFactor*=trailScalingFactor;
+                    p5.strokeWeight(0.1 + maxTrailWidth*trailScalingFactor);
+                    // let pos = historySlice.get(planetID);
+                    // for (const [planetID, pos] of historySlice.entries()) {
+                    let p1 = prevHistorySlice.get(planetID); // same planet, just last frame.
+                    // console.log(p1, pos, (!p1 || ! pos));
+                    if (!p1 || ! pos) {
+                        break;
+                    }
+                    let p2 = pos;
+                    p5.line(p1.x*scale + offsetThisSlice.x, p1.y*scale + offsetThisSlice.y, p2.x*scale + offsetThisSlice.x, p2.y*scale + offsetThisSlice.y,);
+
+                }
+                // if (modelState.history.length > 99) {
+                //     console.log( "HERE", historySlice.size);
+                //     throw new Error();
+                // }
+                prevHistorySlice = historySlice;
+            }
+
+        }
+
+        // if (modelState.history.length > 99) {
+        //     throw new Error();
+        // }
 
         // p5.fill(128);
         // p5.ellipse(offset.x, offset.y, 4, 4);

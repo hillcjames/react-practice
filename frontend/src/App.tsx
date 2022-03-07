@@ -4,7 +4,7 @@ import Header from './components/Header';
 import Body from './components/Body';
 
 import { useBehavior } from './hooks/useBehavior';
-import { ModelState, Model } from "./types/Model";
+import { ModelState } from "./types/Model";
 import { Planet } from "./types/Planet";
 import { mainStore } from './stores/MainStore';
 import { modelStore } from './stores/ModelStore';
@@ -59,6 +59,7 @@ const _App: React.FC<{}> = () => {
         //     new Planet("Eps", -80, 0, 100, 0, 0.85)
         // ];
         let sol: Planet = new Planet("Sol", 0, 0, 100000);
+        let gam: Planet = new Planet("Gam", -20, 0, 1000, 0, 2.2);
         let initialPlanetList: Planet[] = [
             sol,
 
@@ -70,7 +71,8 @@ const _App: React.FC<{}> = () => {
 
             new Planet("Alph", -10, 0, 100, 0, 4),
             new Planet("Bet", -20, 0, 100, 0, 3.2),
-            new Planet("Gam", -20, 0, 1000, 0, 2.2),
+            // new Planet("Gam", -20, 0, 1000, 0, 2.2),
+            gam,
             new Planet("Delt", -30, 0, 100, 0, 1.5),
             new Planet("Eps", -50, 0, 100, 0, 1.25),
             new Planet("Zeta", -80, 0, 100, 0, 0.85),
@@ -81,7 +83,7 @@ const _App: React.FC<{}> = () => {
             new Planet("Endor", 174, 0, 1, 0, -0.97)
         ];
         modelStore.setPlanets(initialPlanetList);
-        modelStore.updatePlanetOfReference(sol);
+        modelStore.updatePlanetOfReference(gam);
         // dispatcher.setPlanets(initialPlanetList);
         mainStore.setSolarDataLoading(false);
         // mainStore.setSolarDataLoading(true);

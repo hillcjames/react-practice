@@ -3,7 +3,6 @@ import React, { Component, useContext, useEffect, useState } from "react";
 import '../css/Body.css';
 import ToolPane from './ToolPane';
 import Display from './Display';
-import { ModelState, Model } from "../types/Model";
 import { modelStore } from '../stores/ModelStore';
 
 

@@ -8,7 +8,7 @@ import SolarSystemDisplay from './SolarSystemDisplay';
 import BasicDataTableDisplay from './BasicDataTableDisplay';
 import { mainStore } from '../stores/MainStore';
 import { useBehavior } from '../hooks/useBehavior';
-import { Model, ModelState } from "../types/Model";
+import { ModelState } from "../types/Model";
 import { Planet } from "../types/Planet";
 import { modelStore, initialModelState } from '../stores/ModelStore';
 

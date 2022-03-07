@@ -50,6 +50,11 @@ export class MainStore {
     private readonly showDeadPlanets$ = new BehaviorSubject(true);
     showDeadPlanets = () => asBehavior(this.showDeadPlanets$);
     setShowDeadPlanets = (show: boolean) => this.showDeadPlanets$.next(show);
+
+
+    private readonly tailLength$ = new BehaviorSubject(100);
+    tailLength = () => asBehavior(this.tailLength$);
+    setTailLength = (newLen: number) => this.tailLength$.next(newLen);
 }
 
 export const mainStore = new MainStore();

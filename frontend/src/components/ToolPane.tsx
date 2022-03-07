@@ -9,7 +9,7 @@ import { useBehavior } from '../hooks/useBehavior';
 import { SendRequestButton } from "./SendRequestButton";
 import { mainStore } from '../stores/MainStore';
 import { modelStore, initialModelState } from '../stores/ModelStore';
-import { Model, ModelState } from "../types/Model";
+import { ModelState } from "../types/Model";
 import { Planet } from '../types/Planet';
 import { Vector2d } from '../types/Vector2d';
 

@@ -7,7 +7,9 @@ import { Vector2d } from '../types/Vector2d';
 import { getMilliseconds } from '../util';
 
 export const initialModelState: ModelState = {
-    planets: []
+    planets: [],
+    // planets: new Map<string, Planet>(),
+    history: []
 }
 
 export class ModelStore {

@@ -1,7 +1,7 @@
 import React, { Component, useContext, useEffect, useState } from "react";
 
 import '../css/Body.css';
-import { ModelState, Model } from "../types/Model";
+import { ModelState } from "../types/Model";
 import { modelStore } from '../stores/ModelStore';
 
 

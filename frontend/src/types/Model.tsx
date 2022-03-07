@@ -7,20 +7,11 @@ import { getAPI } from "../apis/interface";
 import { getTime, uuid, getRandomInt } from "../util";
 
 
-export type Model = {
-    state: ModelState;
-    dispatcher: SolarModelMethods;
-}
 
 export type ModelState = {
     planets: Planet[];
-}
-
-export type SolarModelMethods = {
-    runTick: () => void;
-    addPlanet: () => void;
-    removePlanet: (planetID: string) => void;
-    setPlanets: (planets: Planet[]) => void;
+    // planets: Map<string, Planet>;
+    history: Map<string, Vector2d>[];
 }
 
 // static class
@@ -44,6 +35,8 @@ export class ModelController {
         // p1 will move first, and then p2. So the force p2 feels will always be slightly stronger than the force p1 feels.
 
         let planetPosDeltas: Map<string, Vector2d> = new Map <string, Vector2d>();
+
+        let newSliceOfHistory = new Map<string, Vector2d>();
 
         model.planets.forEach((p1: Planet) => {
             if (p1.dead) {
@@ -95,12 +88,19 @@ export class ModelController {
             //see above note for planetPosDeltas
             planetPosDeltas.set(p1.id, deltaPos);
             // p1.pos.add(deltaPos);
-
-            p1.prevLocs.push(p1.pos.copy());
-            if (p1.prevLocs.length > 100) {
-                p1.prevLocs.splice(0, 1);
-            }
+            //
+            // p1.prevLocs.push(p1.pos.copy());
+            // if (p1.prevLocs.length > 100) {
+            //     p1.prevLocs.splice(0, 1);
+            // }
+            newSliceOfHistory.set(p1.id, p1.pos.copy());
         });
+
+        model.history.push(newSliceOfHistory);
+        if (model.history.length > 500) {
+            model.history.splice(0, 1);
+        }
+
 
 
         model.planets.forEach((p: Planet) => {
@@ -112,6 +112,7 @@ export class ModelController {
         if (somethingDiedThisTick) {
             modelStore.pushUpdateFromSim();
         }
+
 
 
         // model.planets.forEach((p: Planet) => {

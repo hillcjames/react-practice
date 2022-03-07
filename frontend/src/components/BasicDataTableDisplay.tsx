@@ -42,7 +42,7 @@ const _BasicDataTableDisplay: React.FC<BasicDataTableDisplayProps> = (props) => 
 
 
     useEffect(() => {
-        // console.log("Updating _BasicDataTableDisplay useEffect ", props.selectedPlanetID);
+        console.log("Updating _BasicDataTableDisplay useEffect ", props.selectedPlanetID);
 
         // TODO replaceData and updateOrAddData cause lag, even with a small number of table entries. What gives?
         if (ref !== null && ref.current !== null) {
