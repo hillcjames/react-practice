@@ -151,9 +151,10 @@ export class ModelController {
     static forceBetweenPlanets(p1: Planet, p2: Planet): Vector2d {
         // const G = 6.67 * 10e-11; // actual
         const G = 1 * 1e-3;
-        let r  = Math.sqrt(Vector2d.squaredDist(p1.pos, p2.pos));
-        let magnitude = G * p1.mass * p2.mass / r;
-        if (r === 0 || r < (p1.radius() + p2.radius())/10) {
+        let rSqrd = Vector2d.squaredDist(p1.pos, p2.pos);
+        let magnitude = G * p1.mass * p2.mass / rSqrd;
+        let cutoffR = (p1.radius() + p2.radius())/10;
+        if (rSqrd === 0 || rSqrd < cutoffR*cutoffR) {
             magnitude = 0;
         }
         let f = Vector2d.unitVectorFromSourceToDest(p1.pos, p2.pos);

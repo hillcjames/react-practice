@@ -3,6 +3,7 @@ import Sketch from "react-p5";
 import p5Types from "p5"; //Import this for typechecking and intellisense
 import Measure from "react-measure";
 
+import { Planet } from "../types/Planet";
 import { ModelState } from "../types/Model";
 import { Vector2d } from "../types/Vector2d";
 import { mainStore } from '../stores/MainStore';
@@ -14,6 +15,7 @@ import { asTwoDigitStr, getMilliseconds, getRandomInt, mod } from "../util";
 import '../css/p5canvas.css';
 
 export interface P5CanvasProps {
+    onPlanetClick: (p: Planet | null) => void
 }
 
 const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
@@ -37,6 +39,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     const showTails = useBehavior(modelStore.showTails);
 
 
+    // const [rawClick, setRawClick] = useState<Vector2d>(new Vector2d(0,0));
 
     // useEffect(() => {
     //     const resizeObserver = new ResizeObserver((event) => {
@@ -184,6 +187,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
             }
         }
 
+        // p5.rect(rawClick.x, rawClick.y, 10, 10);
 
         if (showTails) {
             let prevHistorySlice = modelState.history[1];
@@ -274,6 +278,32 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
         render(p5);
     };
 
+    const onClick = (event: any) => {
+
+        let offset = getOffset(planetOfReference.pos);
+
+        let mousePos = new Vector2d(event.mouseX, event.mouseY);
+        // setRawClick(mousePos);
+
+        let closest: Planet | null = null;
+        let bestSqrDist: number = 1000000000000000;
+        for (let planet of modelState.planets) {
+            let pos = new Vector2d(planet.pos.x*scale + offset.x, planet.pos.y*scale + offset.y);
+            // console.log(pos, planet.radius()*scale);
+            let sqrDist = Vector2d.squaredDist(pos, mousePos);
+            if (sqrDist < bestSqrDist) {
+                bestSqrDist = sqrDist;
+                closest = planet;
+            }
+        }
+        // what if planet is very wide? Take into account radius.
+        if (closest && bestSqrDist > (closest.radius()+20)*(closest.radius()+20)) {
+            closest = null;
+        }
+        props.onPlanetClick(closest);
+        return;
+    }
+
 
     return (
             <Measure
@@ -310,7 +340,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
             >
                 {({ measureRef }) => (
                     <div className="p5canvas_div_wrapper" ref={measureRef}>
-                        <Sketch className="p5canvas" setup={setup} draw={draw} />
+                        <Sketch className="p5canvas" setup={setup} draw={draw} mouseClicked={onClick}/>
                     </div>
                 )}
             </Measure>

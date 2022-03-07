@@ -32,7 +32,7 @@ export class Vector2d {
     }
 
     public static unitVectorFromSourceToDest(source: Vector2d, dest: Vector2d): Vector2d {
-        let magnitude = Vector2d.squaredDist(source, dest);
+        let magnitude = Math.sqrt(Vector2d.squaredDist(source, dest));
         if (magnitude === 0) {
             return new Vector2d(0, 0);
         }

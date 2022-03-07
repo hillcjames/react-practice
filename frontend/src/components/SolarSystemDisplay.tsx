@@ -37,10 +37,18 @@ const _SolarSystemDisplay: React.FC<SolarSystemDisplayProps> = (props) => {
         setHeadCount(_headCount);
     }, [newSimData]);
 
+    const onPlanetClick = (p: Planet | null) => {
+        if (p) {
+            console.log(p.name);
+            modelStore.updatePlanetOfReference(p);
+            // Honestly, should probably do this for like three frames back in the history, rather than the current frame.
+            // Right now you have to click ahead of your target.
+        }
+    }
 
     return (
         <div className="SolarSystemDisplay">
-            <P5Canvas/>
+            <P5Canvas onPlanetClick={onPlanetClick}/>
             <div>
               Solar system population: {headCount}
               {/* , size: {universeWidth} {universeHeight} */}
