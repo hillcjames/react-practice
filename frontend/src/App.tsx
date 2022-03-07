@@ -61,6 +61,13 @@ const _App: React.FC<{}> = () => {
         let sol: Planet = new Planet("Sol", 0, 0, 100000);
         let initialPlanetList: Planet[] = [
             sol,
+
+            // new Planet("p1", -100, 0, 1000, 0, 1),
+            // new Planet("p2", 100, 0, 1000, 0, 1),
+
+            // new Planet("p1", -100, 0, 50000, 0, 0),
+            // new Planet("p2", 100, 0, 50000, 0, 0),
+
             new Planet("Alph", -10, 0, 100, 0, 4),
             new Planet("Bet", -20, 0, 100, 0, 3.2),
             new Planet("Gam", -20, 0, 1000, 0, 2.2),
@@ -68,13 +75,13 @@ const _App: React.FC<{}> = () => {
             new Planet("Eps", -50, 0, 100, 0, 1.25),
             new Planet("Zeta", -80, 0, 100, 0, 0.85),
             new Planet("Eta", -100, 0, 100, 0, 0.91),
-            new Planet("Theta", -145, -5, 100, 0, 0.95),
-            new Planet("Iota", -154, 0, 100, 0, 0.82),
+            new Planet("Theta", -133, -5, 100, 0, 0.99),
+            new Planet("Iota", -146, 3, 100, 0, 0.87),
             new Planet("Kappa", 170, 0, 500, 0, -0.65),
             new Planet("Endor", 174, 0, 1, 0, -0.97)
         ];
         modelStore.setPlanets(initialPlanetList);
-        modelStore.updateCenterPointOfRef(sol.pos);
+        modelStore.updatePlanetOfReference(sol);
         // dispatcher.setPlanets(initialPlanetList);
         mainStore.setSolarDataLoading(false);
         // mainStore.setSolarDataLoading(true);

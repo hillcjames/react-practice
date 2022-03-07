@@ -26,11 +26,24 @@ export type SolarModelMethods = {
 // static class
 export class ModelController {
 
+    private static flyweight: Planet | undefined = undefined;
+    static getFlyweight(): Planet {
+        if (ModelController.flyweight === undefined) {
+            ModelController.flyweight = new Planet("flyweight", 0, 0, 0, 0, 1);
+        }
+        return ModelController.flyweight;
+    }
+
     // probably feed in dt here as param, but be mindful of long, long ticks due to some problem or something.
     // Would have very unreal effects.
     public static runTick(model: ModelState, dt: number) {
         // let heaviest: Planet | null = null;
-        let somethingDied = false;
+        let somethingDiedThisTick = false;
+
+        // The problem is, the planets always update in the same order. That means if planet p1 and p2 are moving towards each other,
+        // p1 will move first, and then p2. So the force p2 feels will always be slightly stronger than the force p1 feels.
+
+        let planetPosDeltas: Map<string, Vector2d> = new Map <string, Vector2d>();
 
         model.planets.forEach((p1: Planet) => {
             if (p1.dead) {
@@ -47,12 +60,9 @@ export class ModelController {
                     return;
                 }
                 if (ModelController.planetsAreTouching(p1, p2)) {
-                    if (p1.mass >= p2.mass) {
-                        somethingDied = true;
-                        p2.dead = true;
-                        p1.mass += p2.mass;
-                        // p1.radius += 0.1*p2.radius;
-                        p1.rank += p2.rank;
+                    let somethingDiedRightNow = ModelController.handlePlanetCollision(p1, p2);
+                    if (!somethingDiedThisTick) {
+                        somethingDiedThisTick = somethingDiedRightNow;
                     }
                 }
                 let partialF = ModelController.forceBetweenPlanets(p1, p2);
@@ -81,14 +91,25 @@ export class ModelController {
             let deltaV = Vector2d.scaled(a, dt);
             p1.v.add(deltaV);
             let deltaPos = Vector2d.scaled(p1.v, dt);
-            p1.pos.add(deltaPos);
+
+            //see above note for planetPosDeltas
+            planetPosDeltas.set(p1.id, deltaPos);
+            // p1.pos.add(deltaPos);
+
             p1.prevLocs.push(p1.pos.copy());
             if (p1.prevLocs.length > 100) {
                 p1.prevLocs.splice(0, 1);
             }
         });
 
-        if (somethingDied) {
+
+        model.planets.forEach((p: Planet) => {
+            if (planetPosDeltas.has(p.id)) {
+                p.pos.add(planetPosDeltas.get(p.id) as Vector2d);
+            }
+        });
+
+        if (somethingDiedThisTick) {
             modelStore.pushUpdateFromSim();
         }
 
@@ -99,6 +120,25 @@ export class ModelController {
         //     }
         // });
 
+    }
+
+    static handlePlanetCollision(p1: Planet, p2: Planet): boolean {
+        if (p1.dead || p2.dead) {
+            return false;
+        }
+        let survivor = p1.mass > p2.mass ? p1 : p2;
+        let casualty = p1.mass > p2.mass ? p2 : p1;
+
+        let momentumSurvivor = Vector2d.scaled(survivor.v, survivor.mass);
+        let momentumCasualty = Vector2d.scaled(casualty.v, casualty.mass);
+
+        momentumSurvivor.add(momentumCasualty);
+        survivor.v = Vector2d.scaled(momentumSurvivor, 1/(survivor.mass + casualty.mass));
+
+        casualty.dead = true;
+        survivor.mass += casualty.mass;
+        survivor.rank += casualty.rank;
+        return true;
     }
 
     static planetsAreTouching(p1: Planet, p2: Planet): boolean {

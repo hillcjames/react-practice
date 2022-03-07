@@ -1,13 +1,14 @@
 import React, { Component, useContext, useEffect, useRef, useState, useLayoutEffect, useCallback } from "react";
 import Sketch from "react-p5";
 import p5Types from "p5"; //Import this for typechecking and intellisense
+import Measure from "react-measure";
 
 import { ModelState } from "../types/Model";
 import { Vector2d } from "../types/Vector2d";
 import { mainStore } from '../stores/MainStore';
 import { modelStore } from '../stores/ModelStore';
 import { useBehavior } from '../hooks/useBehavior';
-import { asTwoDigitStr, getMilliseconds } from "../util";
+import { asTwoDigitStr, getMilliseconds, getRandomInt, mod } from "../util";
 
 
 import '../css/p5canvas.css';
@@ -24,14 +25,17 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     const [height, setHeight] = useState(1101);
     const [width, setWidth] = useState(1200);
 
+    const [stars, setStars] = useState<Vector2d[]>([] as Vector2d[]);
+
     const [p5, setP5] = useState<p5Types | null>(null);
 
     let scale = 3;
 
     const modelState = useBehavior(modelStore.modelState);
-    const centerPointOfRef = useBehavior(modelStore.centerPointOfRef);
+    const planetOfReference = useBehavior(modelStore.planetOfReference);
     const isSimPaused = useBehavior(modelStore.isSimPaused);
     const showTails = useBehavior(modelStore.showTails);
+
 
 
     // useEffect(() => {
@@ -48,24 +52,27 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     //         resizeObserver.observe(canvasRef);
     //     }
     // });
-    useEffect( () => {
-            // The 'current' property contains info of the reference:
-            // align, title, ... , width, height, etc.
-            if(divRef != null && divRef.current && divRef.current.offsetWidth > 0 && divRef.current.offsetHeight > 0){
-                setWidth(divRef.current.offsetWidth);
-                setHeight(divRef.current.offsetHeight);
-                mainStore.updateUniverseWidth(width/scale);
-                mainStore.updateUniverseHeight(height/scale);
-                modelStore.updateCenterPointOfRef(new Vector2d(width/2, height/2));
-                console.log("Updating new canvas  ", width, height);
-                if (isP5Types(p5) && width !== 0 && height !== 0) {
-                    p5.resizeCanvas(width, height);
-                }
-            }
-
-        }, [divRef]);
+    // useEffect( () => {
+    //         // The 'current' property contains info of the reference:
+    //         // align, title, ... , width, height, etc.
+    //         if(divRef != null && divRef.current && divRef.current.offsetWidth > 0 && divRef.current.offsetHeight > 0){
+    //             setWidth(divRef.current.offsetWidth);
+    //             setHeight(divRef.current.offsetHeight);
+    //             mainStore.updateUniverseWidth(width/scale);
+    //             mainStore.updateUniverseHeight(height/scale);
+    //             modelStore.updatePlanetOfReference(new Vector2d(width/2, height/2));
+    //             console.log("Updating new canvas  ", width, height);
+    //             if (isP5Types(p5) && width !== 0 && height !== 0) {
+    //                 p5.resizeCanvas(width, height);
+    //             }
+    //         }
+    //
+    //     }, [divRef]);
     useEffect(() => {
         console.log("Re-rendering canvas (This shouldn't happen after startup)");
+        for (let i = 0; i < 50; i++) {
+            stars.push( new Vector2d(getRandomInt(2000), getRandomInt(2000)) );
+        }
     }, []);
 
 
@@ -94,12 +101,52 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
 
 
     function getOffset(): Vector2d {
-        return new Vector2d(width/2 - centerPointOfRef.x * scale, height/2 - centerPointOfRef.y * scale)
+        return new Vector2d(width/2 - planetOfReference.pos.x * scale, height/2 - planetOfReference.pos.y * scale)
     }
 
     const render = (p5: p5Types) => {
         p5.background(0);
         p5.stroke(255);
+
+        let offset = getOffset();
+
+        // Instead of making each planet keep track of its 100 previous points,
+        // just save in system state the last hundred positions of all elements.
+        // Just an array of <string ID, position vecotr>maps
+        // Same amount of data, but that way.. I think you can print the tails from the perpective of whichever planet you want?
+        // And it should update immediately?
+        // It'll have to be.. This planets the center, so five frames ago draw this other planet's tail segment using whatever offset would have been present then.
+        // Whatever it is, the current reference point's tail should always be zero.
+        //
+        // That's what you need the moving background for.
+        //
+
+        // Pick a random number, say 17. Plot white dots where pixel % 17 is 0 ?
+        // No. start somewhere on screen, plot 100 points at random intervals % screen size.
+
+        let frequency = 80;
+        for (let star of stars) {
+            if (getRandomInt(frequency) === 1) {
+                star.x += 0.5;
+            }
+            if (getRandomInt(frequency) === 1) {
+                star.y += 0.5;
+            }
+
+            let x = mod(star.x + offset.x, width);
+            let y = mod(star.y + offset.y, height);
+            // if (getRandomInt(frequency) === 1) {
+            //     x += 0.5;
+            // }
+            // if (getRandomInt(frequency) === 1) {
+            //     y += 0.5;
+            // }
+            p5.point(x, y);
+            // console.log(x, y)
+            // p5.rect(x, y, 10, 10);
+            // p5.ellipse(planet.pos.x*scale + offset.x, planet.pos.y*scale + offset.y, planet.radius()*scale, planet.radius()*scale);
+        }
+
         // p5.tint(0, 153, 204);
         // p5.ellipse(x, props.model.state.planets.length*20, 70, 70);
         // // p5.ellipse(x, y, 70, 70);
@@ -111,8 +158,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
         //     x = 400;
         //     // props.model.dispatcher.addPlanet();
         // }
-        // console.log(centerPointOfRef)
-        let offset = getOffset();
+        // console.log(planetOfReference)
         for (let planet of modelState.planets) {
             // ctx.fillStyle = '#000000';
             if (!planet.dead) {
@@ -179,9 +225,44 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
 
 
     return (
-        <div className="p5canvas_div_wrapper" ref={divRef}>
-            <Sketch className="p5canvas" setup={setup} draw={draw}  />
-        </div>
+            <Measure
+                bounds
+                onResize={(contentRect) => {
+                    {/* if (contentRect.bounds && this.state.dimensions.width !== contentRect.bounds.width) { */}
+                    if (contentRect.bounds) {
+
+                        let eitherUpdated: boolean = false;
+                        if (contentRect.bounds.width > 0 && contentRect.bounds.width !== width) {
+                            // if content bounds are different
+                            setWidth(contentRect.bounds.width);
+                            mainStore.updateUniverseWidth(width/scale);
+                            eitherUpdated = true;
+                        }
+
+                        if (contentRect.bounds.height > 0 && contentRect.bounds.height !== height) {
+                            // if content bounds are different
+                            setHeight(contentRect.bounds.height);
+                            mainStore.updateUniverseHeight(height/scale);
+                            eitherUpdated = true;
+                        }
+
+                        if (eitherUpdated) {
+                            console.log("Trying to update new canvas  ", width, height);
+                            if (isP5Types(p5) && width !== 0 && height !== 0) {
+                                console.log("Updating new canvas  ", width, height);
+                                p5.resizeCanvas(width, height);
+                            }
+                        }
+                        console.log("Updating measured canvas bounds:  ", contentRect.bounds);
+                    }
+                }}
+            >
+                {({ measureRef }) => (
+                    <div className="p5canvas_div_wrapper" ref={measureRef}>
+                        <Sketch className="p5canvas" setup={setup} draw={draw} />
+                    </div>
+                )}
+            </Measure>
     );
 };
 

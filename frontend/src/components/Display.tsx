@@ -18,7 +18,7 @@ export interface DisplayProps {
 
 const _Display: React.FC<DisplayProps> = (props: DisplayProps) => {
 
-    const isSolarOpen = useBehavior(mainStore.isSolarDisplayVisible);
+    const isDisplayOpen = useBehavior(mainStore.isDisplayVisible);
     const solarDataIsLoading = useBehavior(mainStore.solarDataIsLoading);
     const solarDataLoadFailure = useBehavior(mainStore.solarDataLoadFailure);
 
@@ -36,20 +36,20 @@ const _Display: React.FC<DisplayProps> = (props: DisplayProps) => {
     return (
     <div className="Display">
         {/* <TestDisplay/> */}
-        {/* {isSolarOpen ? <SolarSystemDisplay /> : null } */}
-        <div  style={{display: isSolarOpen ? "block" : "none"}}>
+        {/* {isDisplayOpen ? <SolarSystemDisplay /> : null } */}
+        {/* <div  style={{display: isDisplayOpen ? "block" : "none"}}> */}
             <SolarSystemDisplay />
-        </div>
-        {/* {!isSolarOpen ? <BasicDataTableDisplay model={periodicModelState} */}
-        <BasicDataTableDisplay model={periodicModelState}
+        {/* </div> */}
+        {/* {!isDisplayOpen ? <BasicDataTableDisplay model={periodicModelState} */}
+        {isDisplayOpen ? <BasicDataTableDisplay model={periodicModelState}
              rowClickCallback={
             (e: any, row: any) => {
-                modelStore.updateCenterPointOfRef(row.getData().pos);
+                modelStore.updatePlanetOfReference(row.getData());
             }}
             showDeadPlanets={showDeadPlanets}
             selectedPlanetID={selectedPlanetID}
             setSelectedPlanetID={setSelectedPlanetID}
-        />
+        /> : null}
     </div>
     );
 }

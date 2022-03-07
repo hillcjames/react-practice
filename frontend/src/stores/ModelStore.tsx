@@ -72,9 +72,9 @@ export class ModelStore {
     runSimulation = () => this.isSimPaused$.next(false);
 
 
-    private readonly centerPointOfRef$ = new BehaviorSubject(new Vector2d(0, 0));
-    centerPointOfRef = () => asBehavior(this.centerPointOfRef$);
-    updateCenterPointOfRef = (newPoint: Vector2d) => this.centerPointOfRef$.next(newPoint);
+    private readonly planetOfReference$ = new BehaviorSubject(ModelController.getFlyweight());
+    planetOfReference = () => asBehavior(this.planetOfReference$);
+    updatePlanetOfReference = (planetToFollow: Planet) => this.planetOfReference$.next(planetToFollow);
 
 
     private readonly newSimData$ = new BehaviorSubject(true);

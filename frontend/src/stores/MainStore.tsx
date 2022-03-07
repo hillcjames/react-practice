@@ -26,10 +26,10 @@ export class MainStore {
     //     this.updateTheme(isBlank(this.themeClass$.value) ? DARK_THEME : "");
     // };
 
-    private readonly isSolarDisplayVisible$ = new BehaviorSubject(true);
-    isSolarDisplayVisible = () => asBehavior(this.isSolarDisplayVisible$);
-    showSolarDisplay = () => this.isSolarDisplayVisible$.next(true);
-    hideSolarDisplay = () => this.isSolarDisplayVisible$.next(false);
+    private readonly isDisplayVisible$ = new BehaviorSubject(true);
+    isDisplayVisible = () => asBehavior(this.isDisplayVisible$);
+    showDisplay = () => this.isDisplayVisible$.next(true);
+    hideDisplay = () => this.isDisplayVisible$.next(false);
 
 
     private readonly universeWidth$ = new BehaviorSubject(400);

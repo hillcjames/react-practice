@@ -52,7 +52,9 @@ export function asObservable<T>(observable: Observable<T>): Observable<T> {
 }
 
 
-
+export function mod(n: number, m: number) {
+  return ((n % m) + m) % m;
+}
 
 
 

@@ -24,7 +24,7 @@ export interface ToolPaneProps {
 const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
     const sendRequestButton = useToggleable(true);
 
-    const solarIsVisible = useBehavior(mainStore.isSolarDisplayVisible);
+    const displayIsVisible = useBehavior(mainStore.isDisplayVisible);
 
     const isPaused = useBehavior(modelStore.isSimPaused);
     const modelState = useBehavior(modelStore.modelState);
@@ -142,12 +142,12 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 title={"Add new planet"}
             />
             <Switch label="Toggle trails" checked={showTails} onChange={modelStore.toggleShowTails} />
-            <Switch label="Toggle display" checked={solarIsVisible} onChange={() => {
-                if (solarIsVisible) {
-                    mainStore.hideSolarDisplay();
+            <Switch label="Toggle display" checked={displayIsVisible} onChange={() => {
+                if (displayIsVisible) {
+                    mainStore.hideDisplay();
                 }
                 else {
-                    mainStore.showSolarDisplay();
+                    mainStore.showDisplay();
                 }
             }} />
             {/* <Switch label="List dead planets" checked={showDeadPlanets} onChange={() => {
