@@ -143,16 +143,10 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 intent={Intent.WARNING}
                 title={"Add new planet"}
             />
+            <Switch label="Show Stars" checked={showStars} onChange={mainStore.toggleShowStars} />
             <Switch label="Show trails" checked={showTails} onChange={mainStore.toggleShowTails} />
-            {/* <Switch label="Show display" checked={displayIsVisible} onChange={() => {
-                if (displayIsVisible) {
-                    mainStore.hideDisplay();
-                }
-                else {
-                    mainStore.showDisplay();
-                }
-            }} /> */}
             <Switch label={tailsRelativeToReferencePlanet ? "Center is reference frame" : "Stars are reference frame"}
+                disabled={!showTails}
                 checked={tailsRelativeToReferencePlanet} onChange={() => {
                     if (tailsRelativeToReferencePlanet) {
                         mainStore.setTailsRelativeTostars();
@@ -161,7 +155,14 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                         mainStore.setTailsRelativeToReferencePlanet();
                     }
             }} />
-            <Switch label="Show Stars" checked={showStars} onChange={mainStore.toggleShowStars} />
+            {/* <Switch label="Show display" checked={displayIsVisible} onChange={() => {
+                if (displayIsVisible) {
+                    mainStore.hideDisplay();
+                }
+                else {
+                    mainStore.showDisplay();
+                }
+            }} /> */}
             {/* <Switch label="List dead planets" checked={showDeadPlanets} onChange={() => {
                     mainStore.setShowDeadPlanets(!showDeadPlanets);
             }} /> */}
