@@ -16,6 +16,7 @@ import '../css/p5canvas.css';
 
 export interface P5CanvasProps {
     onPlanetClick: (p: Planet | null) => void
+    onPlanetRightClick: (p: Planet | null) => void
 }
 
 const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
@@ -31,12 +32,18 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
 
     const [p5, setP5] = useState<p5Types | null>(null);
 
+    const [clickStartLoc, setClickStartLoc] = useState<Vector2d | null>(null);
+    const [clickStartTime, setClickStartTime] = useState<number>(-1);
+    const [clickEnd, setClickEnd] = useState<Vector2d | null>(null);
+
     let scale = 3;
 
     const modelState = useBehavior(modelStore.modelState);
     const planetOfReference = useBehavior(modelStore.planetOfReference);
     const isSimPaused = useBehavior(modelStore.isSimPaused);
-    const showTails = useBehavior(modelStore.showTails);
+    const showTails = useBehavior(mainStore.showTails);
+    const showStars = useBehavior(mainStore.showStars);
+    const tailsRelativeToReferencePlanet = useBehavior(mainStore.tailsRelativeToReferencePlanet);
 
 
     // const [rawClick, setRawClick] = useState<Vector2d>(new Vector2d(0,0));
@@ -84,6 +91,10 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
         // (without that p5 will render the canvas outside of your component)
         setP5(_p5);
         let canvas = _p5.createCanvas(width, height).parent(canvasParentRef);
+
+        canvasParentRef.addEventListener('contextmenu', function(e) {
+              e.preventDefault();
+            }, false);
     };
 
 
@@ -111,7 +122,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
         p5.background(0);
         p5.stroke(255);
 
-        let offset = getOffset(planetOfReference.pos);
+        let neutralOffset = getOffset(planetOfReference.pos);
 
         // Instead of making each planet keep track of its 100 previous points,
         // just save in system state the last hundred positions of all elements.
@@ -127,63 +138,30 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
         // Pick a random number, say 17. Plot white dots where pixel % 17 is 0 ?
         // No. start somewhere on screen, plot 100 points at random intervals % screen size.
 
-        let frequency = 80;
-        for (let star of stars) {
-            if (getRandomInt(frequency) === 1) {
-                star.x += 0.5;
-            }
-            if (getRandomInt(frequency) === 1) {
-                star.y += 0.5;
-            }
+        if (showStars) {
+            p5.strokeWeight(1);
+            let frequency = 80;
+            for (let star of stars) {
+                if (getRandomInt(frequency) === 1) {
+                    star.x += 0.5;
+                }
+                if (getRandomInt(frequency) === 1) {
+                    star.y += 0.5;
+                }
 
-            let x = mod(star.x + offset.x, width);
-            let y = mod(star.y + offset.y, height);
-            // if (getRandomInt(frequency) === 1) {
-            //     x += 0.5;
-            // }
-            // if (getRandomInt(frequency) === 1) {
-            //     y += 0.5;
-            // }
-            p5.point(x, y);
-            // console.log(x, y)
-            // p5.rect(x, y, 10, 10);
-            // p5.ellipse(planet.pos.x*scale + offset.x, planet.pos.y*scale + offset.y, planet.radius()*scale, planet.radius()*scale);
+                let x = mod(star.x + neutralOffset.x, width);
+                let y = mod(star.y + neutralOffset.y, height);
+
+                p5.point(x, y);
+            }
         }
 
-        // p5.tint(0, 153, 204);
-        // p5.ellipse(x, props.model.state.planets.length*20, 70, 70);
-        // // p5.ellipse(x, y, 70, 70);
-        // // NOTE: Do not use setState in the draw function or in functions that are executed
-        // // in the draw function...
-        // // please use normal variables or class properties for these purposes
-        // x++;
-        // if (x > 500) {
-        //     x = 400;
-        //     // props.model.dispatcher.addPlanet();
-        // }
-        // console.log(planetOfReference)
+
         for (let planet of modelState.planets) {
             // ctx.fillStyle = '#000000';
             if (!planet.dead) {
-                // if (showTails) {
-                //     let maxTrailWidth = planet.radius()*scale*0.6;
-                //     for (let i = 2; i < planet.prevLocs.length; i++) {
-                //         let trailScalingFactor = i/planet.prevLocs.length;
-                //         trailScalingFactor*=trailScalingFactor;
-                //         trailScalingFactor*=trailScalingFactor;
-                //         trailScalingFactor*=trailScalingFactor;
-                //         p5.strokeWeight(0.15 + maxTrailWidth*trailScalingFactor);
-                //
-                //         let p1 = planet.prevLocs[i-1];
-                //         let p2 = planet.prevLocs[i];
-                //         let prevR = planet.radius() > 10 ? planet.radius()/10 : 1;
-                //         // p5.ellipse(prvLoc.x*scale + offset.x, prvLoc.y*scale + offset.y, prevR*scale, prevR*scale);
-                //         p5.line(p1.x*scale + offset.x, p1.y*scale + offset.y, p2.x*scale + offset.x, p2.y*scale + offset.y,);
-                //     }
-                // }
-
                 p5.strokeWeight(1);
-                p5.ellipse(planet.pos.x*scale + offset.x, planet.pos.y*scale + offset.y, planet.radius()*scale, planet.radius()*scale);
+                p5.ellipse(planet.pos.x*scale + neutralOffset.x, planet.pos.y*scale + neutralOffset.y, planet.radius()*scale, planet.radius()*scale);
             }
         }
 
@@ -199,8 +177,12 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
                 if (!refPlanetPosThisSlice) {
                     continue;
                 }
+
                 let offsetThisSlice = getOffset(refPlanetPosThisSlice);
 
+                if (!tailsRelativeToReferencePlanet) {
+                    offsetThisSlice = neutralOffset;
+                }
 
                 for (let [planetID, pos] of Array.from(historySlice.entries())) {
                     // TODO change planets to a map
@@ -222,7 +204,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
                         break;
                     }
                     let p2 = pos;
-                    p5.line(p1.x*scale + offsetThisSlice.x, p1.y*scale + offsetThisSlice.y, p2.x*scale + offsetThisSlice.x, p2.y*scale + offsetThisSlice.y,);
+                    p5.line(p1.x*scale + offsetThisSlice.x, p1.y*scale + offsetThisSlice.y, p2.x*scale + offsetThisSlice.x, p2.y*scale + offsetThisSlice.y);
 
                 }
                 // if (modelState.history.length > 99) {
@@ -232,6 +214,15 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
                 prevHistorySlice = historySlice;
             }
 
+        }
+
+        if (clickStartLoc) {
+            p5.strokeWeight(1);
+            let endX = clickStartLoc.x + 0.5*(clickStartLoc.x - p5.mouseX);
+            let endY = clickStartLoc.y + 0.5*(clickStartLoc.y - p5.mouseY);
+            p5.line(clickStartLoc.x, clickStartLoc.y, endX, endY);
+            let r = getRadiusFromTime(getMilliseconds() - clickStartTime);
+            p5.ellipse(clickStartLoc.x, clickStartLoc.y, r, r);
         }
 
         // if (modelState.history.length > 99) {
@@ -278,12 +269,27 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
         render(p5);
     };
 
-    const onClick = (event: any) => {
 
+    const getRadiusFromTime = (timeMouseButtonHeld: number) => {
+        const maxWidth = 15;
+        const deltaRate = 0.01;
+        return 1+Math.abs(Math.floor(deltaRate*timeMouseButtonHeld+maxWidth) % (2*maxWidth) - maxWidth);
+    }
+
+
+    const onMousePress = (event: any) => {
+        let mousePos = new Vector2d(event.mouseX, event.mouseY);
+
+        setClickStartLoc(null);
+        setClickStartTime(-1);
         let offset = getOffset(planetOfReference.pos);
 
-        let mousePos = new Vector2d(event.mouseX, event.mouseY);
-        // setRawClick(mousePos);
+        // if ((mousePos.x < offset.x - width/2 || mousePos.x > offset.x + width/2)
+        //     || (mousePos.y < offset.y - height/2 || mousePos.y > offset.y + height/2)) {
+        //     setClickStartLoc(null);
+        //     setClickStartTime(-1);
+        //     return false;
+        // }
 
         let closest: Planet | null = null;
         let bestSqrDist: number = 1000000000000000;
@@ -296,12 +302,51 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
                 closest = planet;
             }
         }
+
         // what if planet is very wide? Take into account radius.
-        if (closest && bestSqrDist > (closest.radius()+20)*(closest.radius()+20)) {
-            closest = null;
+        if (!closest || (closest && bestSqrDist > (closest.radius()+20)*(closest.radius()+20))) {
+            props.onPlanetClick(null);
+
+            if (event.mouseButton === "right") {
+
+                setClickStartLoc(mousePos);
+                setClickStartTime(getMilliseconds());
+                return false;
+            }
         }
-        props.onPlanetClick(closest);
-        return;
+        else {
+            if (event.mouseButton === "right") {
+                props.onPlanetRightClick(closest);
+                return false;
+            }
+            else {
+                props.onPlanetClick(closest);
+            }
+        }
+
+        return false;
+    }
+
+    const onMouseRelease = (event: any) => {
+        // create a planet at current loc
+        if (!clickStartLoc) {
+            return false;
+        }
+
+        let endX = clickStartLoc.x + 0.5*(clickStartLoc.x - event.mouseX);
+        let endY = clickStartLoc.y + 0.5*(clickStartLoc.y - event.mouseY);
+        let onScreenDist: Vector2d = new Vector2d(endX - clickStartLoc.x, endY - clickStartLoc.y);
+        let v: Vector2d = Vector2d.scaled(onScreenDist, 0.01);
+
+        let neutralOffset = getOffset(planetOfReference.pos);
+        let r = getRadiusFromTime(getMilliseconds() - clickStartTime)/scale;
+        let p = new Planet("Bob", (clickStartLoc.x - neutralOffset.x)/scale, (clickStartLoc.y - neutralOffset.y)/scale, Planet.getMassForRadius(r), v.x, v.y);
+        modelStore.addPlanet(p);
+        // p5.ellipse(planet.pos.x*scale + neutralOffset.x, planet.pos.y*scale + neutralOffset.y, planet.radius()*scale, planet.radius()*scale);
+
+        setClickStartLoc(null);
+        setClickStartTime(-1);
+        return false;
     }
 
 
@@ -340,7 +385,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
             >
                 {({ measureRef }) => (
                     <div className="p5canvas_div_wrapper" ref={measureRef}>
-                        <Sketch className="p5canvas" setup={setup} draw={draw} mouseClicked={onClick}/>
+                        <Sketch className="p5canvas" setup={setup} draw={draw} mousePressed={onMousePress} mouseReleased={onMouseRelease}/>
                     </div>
                 )}
             </Measure>

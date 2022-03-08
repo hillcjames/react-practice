@@ -34,6 +34,11 @@ export class Planet {
         return Math.pow(this.mass, 1/3)/8;
     }
 
+    // This must invert the above function.
+    static getMassForRadius(radius: number) {
+        return Math.pow(radius*8, 3);
+    }
+
     public toString = () : string => {
         return `Planet (id: ${this.id})`;
     }

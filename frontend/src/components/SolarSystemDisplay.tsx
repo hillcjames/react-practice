@@ -39,8 +39,17 @@ const _SolarSystemDisplay: React.FC<SolarSystemDisplayProps> = (props) => {
 
     const onPlanetClick = (p: Planet | null) => {
         if (p) {
-            console.log(p.name);
+            console.log("Left-clicked: ", p.name);
             modelStore.updatePlanetOfReference(p);
+            // Honestly, should probably do this for like three frames back in the history, rather than the current frame.
+            // Right now you have to click ahead of your target.
+        }
+    }
+    const onPlanetRightClick = (p: Planet | null) => {
+        if (p) {
+            console.log("Right-clicked: ", p.name);
+            // mainStore.showPlanetDialog(p);
+
             // Honestly, should probably do this for like three frames back in the history, rather than the current frame.
             // Right now you have to click ahead of your target.
         }
@@ -48,7 +57,7 @@ const _SolarSystemDisplay: React.FC<SolarSystemDisplayProps> = (props) => {
 
     return (
         <div className="SolarSystemDisplay">
-            <P5Canvas onPlanetClick={onPlanetClick}/>
+            <P5Canvas onPlanetClick={onPlanetClick} onPlanetRightClick={onPlanetRightClick}/>
             <div>
               Solar system population: {headCount}
               {/* , size: {universeWidth} {universeHeight} */}

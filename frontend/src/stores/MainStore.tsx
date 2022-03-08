@@ -26,7 +26,7 @@ export class MainStore {
     //     this.updateTheme(isBlank(this.themeClass$.value) ? DARK_THEME : "");
     // };
 
-    private readonly isDisplayVisible$ = new BehaviorSubject(true);
+    private readonly isDisplayVisible$ = new BehaviorSubject(false);
     isDisplayVisible = () => asBehavior(this.isDisplayVisible$);
     showDisplay = () => this.isDisplayVisible$.next(true);
     hideDisplay = () => this.isDisplayVisible$.next(false);
@@ -51,10 +51,23 @@ export class MainStore {
     showDeadPlanets = () => asBehavior(this.showDeadPlanets$);
     setShowDeadPlanets = (show: boolean) => this.showDeadPlanets$.next(show);
 
+    private readonly showTails$ = new BehaviorSubject(false);
+    showTails = () => asBehavior(this.showTails$);
+    toggleShowTails = () => this.showTails$.next(!this.showTails$.getValue());
 
-    private readonly tailLength$ = new BehaviorSubject(100);
-    tailLength = () => asBehavior(this.tailLength$);
-    setTailLength = (newLen: number) => this.tailLength$.next(newLen);
+    private readonly showStars$ = new BehaviorSubject(true);
+    showStars = () => asBehavior(this.showStars$);
+    toggleShowStars = () => this.showStars$.next(!this.showStars$.getValue());
+
+    private readonly tailsRelativeToReferencePlanet$ = new BehaviorSubject(false);
+    tailsRelativeToReferencePlanet = () => asBehavior(this.tailsRelativeToReferencePlanet$);
+    setTailsRelativeToReferencePlanet = () => this.tailsRelativeToReferencePlanet$.next(true);
+    setTailsRelativeTostars = () => this.tailsRelativeToReferencePlanet$.next(false);
+
+    // unused atm, hardcoded.
+    // private readonly tailLength$ = new BehaviorSubject(500);
+    // tailLength = () => asBehavior(this.tailLength$);
+    // setTailLength = (newLen: number) => this.tailLength$.next(newLen);
 }
 
 export const mainStore = new MainStore();

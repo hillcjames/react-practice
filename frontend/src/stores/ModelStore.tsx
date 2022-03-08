@@ -100,9 +100,6 @@ export class ModelStore {
         return this.physicsSpeed$.next(newSpeed);
     }
 
-    private readonly showTails$ = new BehaviorSubject(false);
-    showTails = () => asBehavior(this.showTails$);
-    toggleShowTails = () => this.showTails$.next(!this.showTails$.getValue());
 
 }
 

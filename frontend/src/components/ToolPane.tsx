@@ -34,9 +34,11 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
     const universeWidth = useBehavior(mainStore.universeWidth);
     const universeHeight = useBehavior(mainStore.universeHeight);
 
-    const showTails = useBehavior(modelStore.showTails);
-
+    const showTails = useBehavior(mainStore.showTails);
+    const showStars = useBehavior(mainStore.showStars);
     const showDeadPlanets = useBehavior(mainStore.showDeadPlanets);
+
+    const tailsRelativeToReferencePlanet = useBehavior(mainStore.tailsRelativeToReferencePlanet);
 
 
     // useEffect(() => {
@@ -141,15 +143,25 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 intent={Intent.WARNING}
                 title={"Add new planet"}
             />
-            <Switch label="Toggle trails" checked={showTails} onChange={modelStore.toggleShowTails} />
-            <Switch label="Toggle display" checked={displayIsVisible} onChange={() => {
+            <Switch label="Show trails" checked={showTails} onChange={mainStore.toggleShowTails} />
+            {/* <Switch label="Show display" checked={displayIsVisible} onChange={() => {
                 if (displayIsVisible) {
                     mainStore.hideDisplay();
                 }
                 else {
                     mainStore.showDisplay();
                 }
+            }} /> */}
+            <Switch label={tailsRelativeToReferencePlanet ? "Center is reference frame" : "Stars are reference frame"}
+                checked={tailsRelativeToReferencePlanet} onChange={() => {
+                    if (tailsRelativeToReferencePlanet) {
+                        mainStore.setTailsRelativeTostars();
+                    }
+                    else {
+                        mainStore.setTailsRelativeToReferencePlanet();
+                    }
             }} />
+            <Switch label="Show Stars" checked={showStars} onChange={mainStore.toggleShowStars} />
             {/* <Switch label="List dead planets" checked={showDeadPlanets} onChange={() => {
                     mainStore.setShowDeadPlanets(!showDeadPlanets);
             }} /> */}
