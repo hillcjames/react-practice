@@ -19,8 +19,8 @@ export interface P5CanvasProps {
 }
 
 const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
-    const [width, setWidth] = useState(1200);
-    const [height, setHeight] = useState(1001);
+    const [width, setWidth] = useState(950);
+    const [height, setHeight] = useState(801);
 
     const [stars, setStars] = useState<Vector2d[]>([] as Vector2d[]);
 
@@ -31,7 +31,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     const [clickStartLoc, setClickStartLoc] = useState<Vector2d | null>(null);
     const [clickStartTime, setClickStartTime] = useState<number>(-1);
 
-    let scale = 3;
+    const [scale, setScale] = useState<number>(3);
 
     const modelState = useBehavior(modelStore.modelState);
     const planetOfReference = useBehavior(modelStore.planetOfReference);
