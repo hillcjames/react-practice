@@ -6,15 +6,12 @@ import { isValidNumber, uuid } from "../util";
 export class Planet {
     id: string;
     name: string;
-    // radius: number;
     pos: Vector2d;
     v: Vector2d;
     mass: number;
     style: PlanetStyle;
-    debug: string = "";
     rank: number = 1;
     dead: boolean = false;
-    prevLocs: Vector2d[] = [];
 
     constructor(name: string, x: number, y: number, mass: number, vX?: number, vY?: number, style?: PlanetStyle) {
         this.id = uuid();
@@ -25,9 +22,9 @@ export class Planet {
         // this.radius = isValidNumber(radius) ? radius : 5;
         // this.radius = Math.pow(this.mass, 1/4)/3;
         // this.radius = Math.pow(this.mass, 1/4)/3;
-        this.style = (style != undefined ? style : PlanetStyles.BLUE);
-        this.prevLocs = [this.pos];
-        console.log(this.pos, this.mass, this.radius);
+        this.style = (style !== undefined ? style : PlanetStyles.BLUE);
+        //
+        // console.log(this.pos, this.mass, this.radius());
     }
 
     public radius = () : number => {
@@ -45,10 +42,18 @@ export class Planet {
 
     public updateFrameOfReference(solPos: Vector2d) {
         this.pos.add(Vector2d.scaled(solPos, -1));
+    }
+}
 
-        this.prevLocs.forEach((prevLoc: Vector2d) => {
-            prevLoc.add(Vector2d.scaled(solPos, -1));
-        });
+export function planetFromJSONObject(obj: any): Planet | null {
+    try {
+        let p = new Planet(obj.name, obj.pos.x, obj.pos.y, obj.mass, obj.v.x, obj.v.y, obj.style);
+        p.id = obj.id;
+        return p;
+    }
+    catch (e) {
+        console.log("Couldn't parse planet object: ", obj, e);
+        return null;
     }
 }
 

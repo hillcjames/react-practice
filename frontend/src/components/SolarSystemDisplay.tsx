@@ -2,14 +2,13 @@ import React, { Component, useContext, useEffect, useState } from "react";
 
 import { ModelState } from "../types/Model";
 import { Planet } from "../types/Planet";
+import { Vector2d } from "../types/Vector2d";
 
 import { mainStore } from '../stores/MainStore';
 import { modelStore } from '../stores/ModelStore';
 import { useBehavior } from '../hooks/useBehavior';
 
 import P5Canvas from "./P5Canvas"
-import logo from '../icons/logo.svg';
-import { Vector2d } from "../types/Vector2d";
 
 import '../css/SolarSystemDisplay.css';
 
@@ -21,23 +20,20 @@ const _SolarSystemDisplay: React.FC<SolarSystemDisplayProps> = (props) => {
 
     const [headCount, setHeadCount] = useState(0);
     const modelState: ModelState = useBehavior(modelStore.modelState);
-    const universeWidth = useBehavior(mainStore.universeWidth);
-    const universeHeight = useBehavior(mainStore.universeHeight);
+    // const universeWidth = useBehavior(mainStore.universeWidth);
+    // const universeHeight = useBehavior(mainStore.universeHeight);
 
-    const newSimData = useBehavior(modelStore.newSimData);
+    // const newSimData = useBehavior(modelStore.newSimData);
 
     useEffect(() => {
-        // console.log("Updating SolarSystemDisplay useEffect ", newSimData);
-        let _headCount = 0;
-        for (let p of modelState.planets) {
-            if (!p.dead) {
-                _headCount++;
-            }
-        }
-        setHeadCount(_headCount);
-    }, [newSimData]);
+        setHeadCount(modelState.planets.length);
+    }, [modelState]);
 
-    const onPlanetClick = (p: Planet | null) => {
+    // useEffect(() => {
+    //     // save to disk? This frequently?
+    // }, [newSimData]);
+
+    const onPlanetClick = (p: Planet) => {
         if (p) {
             console.log("Left-clicked: ", p.name);
             modelStore.updatePlanetOfReference(p);

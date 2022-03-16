@@ -5,15 +5,15 @@ import { InputGroup } from "@blueprintjs/core";
 // @ts-ignore
 import { reactFormatter, ReactTabulator } from "react-tabulator";
 
-// import * as styles from "../css/GenericTable.scss";
 import "react-tabulator/lib/styles.css";
 import "react-tabulator/css/bootstrap/tabulator_bootstrap4.min.css";
+// import "../css/GenericTable.module.scss";
+import styles from "../css/GenericTable.module.scss";
 
 // import { classNames } from "../util";
 import { isFunction, uuid } from "../util";
 import { mainStore } from "../stores/MainStore";
 
-const styles: any = {}
 
 interface Props<T> {
     getColumns: () => ColumnTabulator[];
@@ -91,7 +91,7 @@ export class GenericTable<T> extends React.Component<Props<T>, State<T>> {
         };
         this.filterable = !(props.filterable === false);
         this.searchCaseSensitive = props.searchCaseSensitive ? props.searchCaseSensitive : false;
-        this.tableRef = React.createRef();
+        // this.tableRef = React.createRef();
     }
 
     render() {
@@ -107,7 +107,7 @@ export class GenericTable<T> extends React.Component<Props<T>, State<T>> {
                 {({ measureRef }) => (
                     <div ref={measureRef}>
                         {this.filterable && this.getSearchBox()}
-                        <div className={styles.table}>
+                        <div className={"table"}>
                             <ReactTabulator
                                 ref={this.tableRef}
                                 columns={this.formatColumnNames(this.props.getColumns())}
@@ -115,6 +115,7 @@ export class GenericTable<T> extends React.Component<Props<T>, State<T>> {
                                 rowClick={(ev: any, row: any) => this.selectItem(ev, row)}
                                 options={this.buildTableProps(this.state.dimensions.height)}
                                 // data-custom-attr="test-custom-attribute"
+                                className={"table-borderless"}
                             />
                             {/* className={classNames("table-sm table-striped table-borderless", mainStore.getTheme())} */}
                         </div>
@@ -322,7 +323,7 @@ export class GenericTable<T> extends React.Component<Props<T>, State<T>> {
 
     private getSearchBox = () => {
         return (
-            <div className={styles.actionBar}>
+            <div className={"actionBar"}>
                 <InputGroup
                     placeholder="Search..."
                     leftIcon="search"

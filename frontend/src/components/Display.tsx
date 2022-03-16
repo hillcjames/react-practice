@@ -1,16 +1,20 @@
 import React, { Component, useContext, useEffect, useState  } from "react";
+import { Tabs, Tab } from "@blueprintjs/core";
+
+import SolarSystemDisplay from './SolarSystemDisplay';
+import BasicDataTableDisplay from './BasicDataTableDisplay';
+import DataTable from './DataTable';
+
+import { useBehavior } from '../hooks/useBehavior';
+import { ModelState } from "../types/Model";
+import { Planet } from "../types/Planet";
+
+import { mainStore, Displays } from '../stores/MainStore';
+import { modelStore, initialModelState } from '../stores/ModelStore';
 
 import logo from '../icons/logo.svg';
 import '../css/Body.css';
 import '../css/Display.css';
-import TestDisplay from './TestDisplay';
-import SolarSystemDisplay from './SolarSystemDisplay';
-import BasicDataTableDisplay from './BasicDataTableDisplay';
-import { mainStore } from '../stores/MainStore';
-import { useBehavior } from '../hooks/useBehavior';
-import { ModelState } from "../types/Model";
-import { Planet } from "../types/Planet";
-import { modelStore, initialModelState } from '../stores/ModelStore';
 
 
 export interface DisplayProps {
@@ -18,7 +22,7 @@ export interface DisplayProps {
 
 const _Display: React.FC<DisplayProps> = (props: DisplayProps) => {
 
-    const isDisplayOpen = useBehavior(mainStore.isDisplayVisible);
+    const currentDisplay = useBehavior(mainStore.currentDisplay);
     const solarDataIsLoading = useBehavior(mainStore.solarDataIsLoading);
     const solarDataLoadFailure = useBehavior(mainStore.solarDataLoadFailure);
 
@@ -35,21 +39,36 @@ const _Display: React.FC<DisplayProps> = (props: DisplayProps) => {
 
     return (
     <div className="Display">
-        {/* <TestDisplay/> */}
-        {/* {isDisplayOpen ? <SolarSystemDisplay /> : null } */}
-        {/* <div  style={{display: isDisplayOpen ? "block" : "none"}}> */}
+        <div  style={{display: currentDisplay === Displays.SOLAR ? "block" : "none"}}>
             <SolarSystemDisplay />
-        {/* </div> */}
+        </div>
         {/* {!isDisplayOpen ? <BasicDataTableDisplay model={periodicModelState} */}
-        {isDisplayOpen ? <BasicDataTableDisplay model={periodicModelState}
+        {/* {isDisplayOpen ? <BasicDataTableDisplay model={periodicModelState}
              rowClickCallback={
             (e: any, row: any) => {
                 modelStore.updatePlanetOfReference(row.getData());
             }}
-            showDeadPlanets={showDeadPlanets}
             selectedPlanetID={selectedPlanetID}
             setSelectedPlanetID={setSelectedPlanetID}
-        /> : null}
+        /> : null} */}
+        {currentDisplay === Displays.DATA ? <Tabs
+            animate={true}
+            key={"vertical"}
+            vertical={false}>
+            <Tab id="rx" title="Tab1" panel={
+                <BasicDataTableDisplay model={periodicModelState}
+                     rowClickCallback={
+                    (e: any, row: any) => {
+                        modelStore.updatePlanetOfReference(row.getData());
+                    }}
+                    selectedPlanetID={selectedPlanetID}
+                    setSelectedPlanetID={setSelectedPlanetID}
+                />
+            } />
+            <Tab id="ng" title="Tab2" panel={
+                <DataTable model={periodicModelState}/>
+            } />
+        </Tabs> : null}
     </div>
     );
 }

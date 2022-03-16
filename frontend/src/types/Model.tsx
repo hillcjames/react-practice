@@ -1,10 +1,10 @@
-import { useCallback, useMemo, useState } from "react";
+// import { useCallback, useMemo, useState } from "react";
 
-import { modelStore } from '../stores/ModelStore';
+import { modelStore, AreaInBounds } from '../stores/ModelStore';
 import { Planet } from "../types/Planet";
 import { Vector2d } from "../types/Vector2d";
-import { getAPI } from "../apis/interface";
-import { getTime, uuid, getRandomInt } from "../util";
+// import { getAPI } from "../apis/interface";
+import { getTime, getRandomInt } from "../util";
 
 
 
@@ -16,14 +16,6 @@ export type ModelState = {
 
 // static class
 export class ModelController {
-
-    private static flyweight: Planet | undefined = undefined;
-    static getFlyweight(): Planet {
-        if (ModelController.flyweight === undefined) {
-            ModelController.flyweight = new Planet("flyweight", 0, 0, 0, 0, 1);
-        }
-        return ModelController.flyweight;
-    }
 
     // probably feed in dt here as param, but be mindful of long, long ticks due to some problem or something.
     // Would have very unreal effects.
@@ -38,6 +30,7 @@ export class ModelController {
 
         let newSliceOfHistory = new Map<string, Vector2d>();
 
+
         model.planets.forEach((p1: Planet) => {
             if (p1.dead) {
                 return;
@@ -49,7 +42,7 @@ export class ModelController {
             let totalForce = new Vector2d(0, 0);
 
             model.planets.forEach((p2: Planet) => {
-                if ((p1.id === p2.id) || p2.dead) {
+                if ((p1.id === p2.id) || p2.dead || p1.dead) {
                     return;
                 }
                 if (ModelController.planetsAreTouching(p1, p2)) {
@@ -58,21 +51,17 @@ export class ModelController {
                         somethingDiedThisTick = somethingDiedRightNow;
                     }
                 }
+                if (p1.dead || p2.dead) {
+                    return;
+                }
                 let partialF = ModelController.forceBetweenPlanets(p1, p2);
 
-                // if (isNaN(totalForce.x) || isNaN(totalForce.y)) {
-                //     throw new Error("temp");
-                //     return;
-                // }
-                // if (p1.name !== "Sol") {
-                    totalForce.add(partialF);
-                // }
-
-                // if (model.planets.length > 3) {
-                //     console.log(p1.id + " " + p2.id + " " + totalForce + " " + partialF);
-                // }
+                totalForce.add(partialF);
             });
-            p1.debug = totalForce.toString();
+            // if this planet died this frame
+            if (p1.dead) {
+                return;
+            }
 
             // dx = v0*t + 1/2*a*t^2
             // console.log(p1.id + " " + totalForce + " " + p1.v);
@@ -87,12 +76,7 @@ export class ModelController {
 
             //see above note for planetPosDeltas
             planetPosDeltas.set(p1.id, deltaPos);
-            // p1.pos.add(deltaPos);
-            //
-            // p1.prevLocs.push(p1.pos.copy());
-            // if (p1.prevLocs.length > 100) {
-            //     p1.prevLocs.splice(0, 1);
-            // }
+
             newSliceOfHistory.set(p1.id, p1.pos.copy());
         });
 
@@ -106,6 +90,11 @@ export class ModelController {
         model.planets.forEach((p: Planet) => {
             if (planetPosDeltas.has(p.id)) {
                 p.pos.add(planetPosDeltas.get(p.id) as Vector2d);
+                if (p.pos.x < AreaInBounds.xMin || p.pos.x > AreaInBounds.xMax || p.pos.y < AreaInBounds.yMin || p.pos.y > AreaInBounds.yMax) {
+                    // console.log(p.pos.x)
+                    modelStore.removePlanet(p.id);
+                    p.dead = true;
+                }
             }
         });
 
@@ -132,13 +121,19 @@ export class ModelController {
 
         let momentumSurvivor = Vector2d.scaled(survivor.v, survivor.mass);
         let momentumCasualty = Vector2d.scaled(casualty.v, casualty.mass);
+        console.log(survivor.v, casualty.v);
+        console.log(momentumSurvivor, momentumCasualty);
 
         momentumSurvivor.add(momentumCasualty);
         survivor.v = Vector2d.scaled(momentumSurvivor, 1/(survivor.mass + casualty.mass));
+        console.log("   ", momentumSurvivor, survivor.v);
 
         casualty.dead = true;
         survivor.mass += casualty.mass;
         survivor.rank += casualty.rank;
+        // modelStore.removePlanet(casualty.id);
+
+
         return true;
     }
 

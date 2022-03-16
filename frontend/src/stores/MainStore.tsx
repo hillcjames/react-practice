@@ -1,13 +1,18 @@
 import { BehaviorSubject } from "rxjs";
-import { asBehavior, BehaviorObservable } from "../util";
+import { asBehavior } from "../util";
 
 // import { themeApi } from "../api/clients/ThemeAPI";
 // import { DARK_THEME } from "../constants";
 // import { isBlank } from "../utility";
 
+export const Displays = {
+    SOLAR: "SOLAR",
+    DATA: "DATA"
+}
 
 // think up a better name sometime. This is a store for navigation, what screen you're on, what panels are showing.
 export class MainStore {
+
     // private readonly storeUrl$ = new BehaviorSubject("");
 
     // private readonly themeClass$ = new BehaviorSubject(DARK_THEME);
@@ -26,10 +31,10 @@ export class MainStore {
     //     this.updateTheme(isBlank(this.themeClass$.value) ? DARK_THEME : "");
     // };
 
-    private readonly isDisplayVisible$ = new BehaviorSubject(false);
-    isDisplayVisible = () => asBehavior(this.isDisplayVisible$);
-    showDisplay = () => this.isDisplayVisible$.next(true);
-    hideDisplay = () => this.isDisplayVisible$.next(false);
+    private readonly currentDisplay$ = new BehaviorSubject(Displays.SOLAR);
+    currentDisplay = () => asBehavior(this.currentDisplay$);
+    showSolarDisplay = () => this.currentDisplay$.next(Displays.SOLAR);
+    showDataDisplay = () => this.currentDisplay$.next(Displays.DATA);
 
 
     private readonly universeWidth$ = new BehaviorSubject(400);
@@ -51,7 +56,7 @@ export class MainStore {
     showDeadPlanets = () => asBehavior(this.showDeadPlanets$);
     setShowDeadPlanets = (show: boolean) => this.showDeadPlanets$.next(show);
 
-    private readonly showTails$ = new BehaviorSubject(false);
+    private readonly showTails$ = new BehaviorSubject(true);
     showTails = () => asBehavior(this.showTails$);
     toggleShowTails = () => this.showTails$.next(!this.showTails$.getValue());
 

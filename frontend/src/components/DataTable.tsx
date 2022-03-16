@@ -14,43 +14,50 @@ export interface DataTableProps {
     model: ModelState
 }
 
+function safeStringify(obj: any, indent: any = 2) {
+  let cache: any = [];
+  const retVal: any = JSON.stringify(
+    obj,
+    (key: any, value: any) =>
+      typeof value === "object" && value !== null
+        ? cache.includes(value)
+          ? undefined // Duplicate reference found, discard key
+          : cache.push(value) && value // Store value in our collection
+        : value,
+    indent
+  );
+  cache = null;
+  return retVal;
+};
+
+
 const _DataTable: React.FC<DataTableProps> = (props) => {
 
-    const showDeadPlanets = useBehavior(mainStore.showDeadPlanets);
 
     const [loading, setLoading] = useState(false);
 
-    // useEffect(() => {
-    //     console.log("Updating _TestComponent useEffect ");
-    //     for (let p of props.model.planets) {
-    //         if (p.name === "Bet") {
-    //             let currentV = p.v.toString();
-    //             console.log(currentV)
-    //             setMsg(currentV)
-    //         }
-    //     }
-    // });
+    useEffect(() => {
+        console.log("Updating DataTable useEffect ", props.model.planets.length);
+
+    });
 
 
     let VectorFormatter = (cell: any, formatterParams: any, onRendered: any) => {
-        let pos: Vector2d = cell.getValue();
-        return pos.x.toFixed(1) + " " + pos.y.toFixed(1);
-    }
-
-    let deadFilter = (data: Planet, filterParams: any) => {
-        return showDeadPlanets || !data.dead; //must return a boolean, true if it passes the filter.
+        // let pos: Vector2d = cell.getValue();
+        // return pos.x.toFixed(1) + " " + pos.y.toFixed(1);
+        // console.log(safeStringify(cell.cell._cell))
+        console.log(cell.getValue())
+        return "1";
     }
 
     let getTableColumns: () => ColumnTabulator[] = () => {
         return [
             { title: "Name", field: "name", width: 30 },
             // { title: "Pos", field: "pos", formatter: reactFormatter(<div>{pos}</div>) },
-            { title: "Pos", field: "pos", width: 100, formatter: VectorFormatter },
-            { title: "Velocity", field: "v", width: 100, formatter: VectorFormatter },
+            // { title: "Pos", field: "pos", width: 100, formatter: VectorFormatter },
+            // { title: "Velocity", field: "v", width: 100, formatter: VectorFormatter },
             { title: "Mass", field: "mass", width: 150 },
             { title: "Rank", field: "rank", width: 150 },
-            { title: "Debug", field: "debug", width: 150 },
-            { title: "Dead", field: "dead" },
             // {
             //     title: "Actions",
             //     width: 180,
@@ -75,7 +82,7 @@ const _DataTable: React.FC<DataTableProps> = (props) => {
         ] as ColumnTabulator[];
     }
 
-
+    console.log(props.model.planets)
     return ( <div className="data-table">
                 <GenericTable
                     title={"Current Planets"}
@@ -85,6 +92,7 @@ const _DataTable: React.FC<DataTableProps> = (props) => {
                         loading: loading,
                         paginationSize: 10
                     }}
+                    filterable={false}
                 />
             </div>
     );

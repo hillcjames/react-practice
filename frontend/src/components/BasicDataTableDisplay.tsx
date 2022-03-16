@@ -1,7 +1,7 @@
-import React, { Component, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 // import { Cell, Column, Table } from "@blueprintjs/table";
 
-import { ReactTabulator, reactFormatter } from "react-tabulator";
+import { ReactTabulator } from "react-tabulator";
 import "react-tabulator/lib/styles.css"; // default theme
 // import "react-tabulator/css/bootstrap/tabulator_bootstrap.min.css";
 import "react-tabulator/css/tabulator_midnight.min.css";
@@ -19,7 +19,6 @@ import '../css/BasicDataTableDisplay.css';
 export interface BasicDataTableDisplayProps {
     model: ModelState;
     rowClickCallback: (e: any, row: any) => void;
-    showDeadPlanets: boolean;
     selectedPlanetID: string;
     setSelectedPlanetID: (newID: string) => void;
 }
@@ -37,7 +36,7 @@ const _BasicDataTableDisplay: React.FC<BasicDataTableDisplayProps> = (props) => 
     }
 
     let deadFilter = (data: Planet, filterParams: any) => {
-        return props.showDeadPlanets || !data.dead; //must return a boolean, true if it passes the filter.
+        return !data.dead; //must return a boolean, true if it passes the filter.
     }
 
 
@@ -62,13 +61,12 @@ const _BasicDataTableDisplay: React.FC<BasicDataTableDisplayProps> = (props) => 
 
 
     const columns = [
-        { title: "Name", field: "name", width: 30 },
+        { title: "Name", field: "name", width: 60 },
         // { title: "Pos", field: "pos", formatter: reactFormatter(<div>{pos}</div>) },
         { title: "Pos", field: "pos", width: 100, formatter: VectorFormatter },
         { title: "Velocity", field: "v", width: 100, formatter: VectorFormatter },
         { title: "Mass", field: "mass", width: 150 },
         { title: "Rank", field: "rank", width: 150 },
-        { title: "Debug", field: "debug", width: 150 },
         { title: "Dead", field: "dead" },
     ];
 
@@ -81,11 +79,11 @@ const _BasicDataTableDisplay: React.FC<BasicDataTableDisplayProps> = (props) => 
     //     let p: Planet = props.model.state.planets[rowIndex];
     //     return (<Cell>{p.id}</Cell>);
     // }
-    const posCellRenderer = (rowIndex: number) => {
-        // <Cell>{`€${(rowIndex * 10 * 0.85).toFixed(2)}`}</Cell>
-        let p: Planet = props.model.planets[rowIndex];
-        return (<div>{p.pos}</div>);
-    }
+    // const posCellRenderer = (rowIndex: number) => {
+    //     // <Cell>{`€${(rowIndex * 10 * 0.85).toFixed(2)}`}</Cell>
+    //     let p: Planet = props.model.planets[rowIndex];
+    //     return (<div>{p.pos}</div>);
+    // }
 
 
     return (
@@ -100,9 +98,9 @@ const _BasicDataTableDisplay: React.FC<BasicDataTableDisplayProps> = (props) => 
                   data={props.model.planets}
                   events={{
                     rowClick: (e: any, row: any) => {
-                        {/* console.log("*", row.getData().name, props.selectedPlanetID) */}
+                        /* console.log("*", row.getData().name, props.selectedPlanetID) */
                         props.setSelectedPlanetID(row.getData().name);
-                        {/* console.log("*", row.getData().name, props.selectedPlanetID) */}
+                        /* console.log("*", row.getData().name, props.selectedPlanetID) */
                         props.rowClickCallback(e, row);
                     }}}
                   initialFilter={deadFilter}
@@ -110,7 +108,7 @@ const _BasicDataTableDisplay: React.FC<BasicDataTableDisplayProps> = (props) => 
                       if (row.getData().dead) {
                           row.getElement().childNodes[0].style.backgroundColor = "#4d1300";
                       }
-                      {/* console.log(row.getData().name,  props.selectedPlanetID, row === props.selectedPlanetID) */}
+                      /* console.log(row.getData().name,  props.selectedPlanetID, row === props.selectedPlanetID) */
                       if (row.getData().name === props.selectedPlanetID ) {
                           row.getElement().style.backgroundColor = "#00802b";
                       }

@@ -34,6 +34,10 @@
   width: calc(100% - 170px);
 }
 
+:local .tabulator {
+    background-color: transparent !important;
+}
+
 .tabulator {
   // general
   font-size: inherit;
@@ -82,10 +86,18 @@
     }
   }
 
+  .tabulator .tabulator-header .tabulator-col {
+      background-color: transparent !important;
+  }
+
   // collapsed text
   .tabulator-row .tabulator-responsive-collapse table {
     font-size: inherit !important;
     border: none;
+    background-color: transparent !important;
+  }
+  .tabulator-row {
+    background-color: transparent !important;
   }
 
   // active pagination

@@ -22,8 +22,8 @@ export class Vector2d {
     }
 
     piecewiseInverse() {
-        let invX = this.x != 0 ? 1/this.x : 0;
-        let invY = this.y != 0 ? 1/this.y : 0;
+        let invX = this.x !== 0 ? 1/this.x : 0;
+        let invY = this.y !== 0 ? 1/this.y : 0;
         return new Vector2d(invX, invY);
     }
 
@@ -56,7 +56,7 @@ export class Vector2d {
     }
 
     public static dotProduct(v1: Vector2d, v2: Vector2d): number {
-        return v1.x * v2.x, v1.y * v2.y;
+        return v1.x * v2.x + v1.y * v2.y;
     }
 
     public static squaredDist(v1: Vector2d, v2: Vector2d): number {

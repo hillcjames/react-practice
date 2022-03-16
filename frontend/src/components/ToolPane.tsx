@@ -1,19 +1,16 @@
 import React, { Component, useContext, useEffect, useState } from "react";
 import { Button, Intent, Switch } from "@blueprintjs/core";
 
-import BasicDataTableDisplay from './BasicDataTableDisplay';
-import TestComponent from './TestComponent';
+// import TestComponent from './TestComponent';
+import ToolBarButton from './ToolBarButton';
 
 import { useToggleable } from "../hooks/useToggleable";
 import { useBehavior } from '../hooks/useBehavior';
-import { SendRequestButton } from "./SendRequestButton";
-import { mainStore } from '../stores/MainStore';
-import { modelStore, initialModelState } from '../stores/ModelStore';
+// import { SendRequestButton } from "./SendRequestButton";
+import { mainStore, Displays } from '../stores/MainStore';
+import { modelStore } from '../stores/ModelStore';
 import { ModelState } from "../types/Model";
-import { Planet } from '../types/Planet';
-import { Vector2d } from '../types/Vector2d';
 
-import logo from '../icons/logo.svg';
 import '../css/Body.css';
 import '../css/ToolPane.css';
 
@@ -22,29 +19,19 @@ export interface ToolPaneProps {
 }
 
 const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
-    const sendRequestButton = useToggleable(true);
+    // const sendRequestButton = useToggleable(true);
 
-    const displayIsVisible = useBehavior(mainStore.isDisplayVisible);
+    const currentDisplay = useBehavior(mainStore.currentDisplay);
 
     const isPaused = useBehavior(modelStore.isSimPaused);
-    const modelState = useBehavior(modelStore.modelState);
-    // const [periodicModelState, setPeriodicModelState] = useState(initialModelState);
-    const newSimData = useBehavior(modelStore.newSimData);
 
     const universeWidth = useBehavior(mainStore.universeWidth);
     const universeHeight = useBehavior(mainStore.universeHeight);
 
     const showTails = useBehavior(mainStore.showTails);
     const showStars = useBehavior(mainStore.showStars);
-    const showDeadPlanets = useBehavior(mainStore.showDeadPlanets);
 
     const tailsRelativeToReferencePlanet = useBehavior(mainStore.tailsRelativeToReferencePlanet);
-
-
-    // useEffect(() => {
-    //     // console.log("Updating toolpane")
-    //     setPeriodicModelState({...modelState});
-    // }, [newSimData]); // Only re-run the effect if count changes
 
 
     return (
@@ -63,39 +50,33 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 }}
             /> */}
             <Button
-                text={"Add extra planets"}
-                data-element-id="add-planet-button"
+                text={"Reset Viewing Area"}
+                data-element-id="reset-view-button"
                 disabled={false}
                 onClick={() => {
-                    {/* props.model.dispatcher.addPlanet();
-                    props.model.dispatcher.addPlanet();
-                    props.model.dispatcher.addPlanet(); */}
-                    console.log(universeWidth, universeHeight)
-                    modelStore.addRandomPlanet(universeWidth, universeHeight);
-                    modelStore.addRandomPlanet(universeWidth, universeHeight);
-                    modelStore.addRandomPlanet(universeWidth, universeHeight);
+                    modelStore.resetView();
                 }}
-                icon="add"
+                icon="reset"
                 minimal
                 small
                 intent={Intent.WARNING}
-                title={"Add extra planets"}
+                title={"Reset Viewing Area"}
+            />
+            <ToolBarButton
+                text={"Load Preset"}
+                onClick={() => {
+                    modelStore.loadPresetSolarSystem();
+                }}
+            />
+            <ToolBarButton
+                text={"Clear Solar System"}
+                onClick={() => {
+                    modelStore.resetSolarSystem();
+                }}
             />
 
-            {/*
-            <Button
-                text={" Toggle display"}
-                data-element-id="toggle-display-button"
-                disabled={false}
-                onClick={}
-                icon="refresh"
-                minimal
-                small
-                title={"Toggle display"}
-            /> */}
-            <Button
+            <ToolBarButton
                 text={isPaused ? "Run Sim" : "Pause Sim"}
-                data-element-id="run-tick-button"
                 disabled={false}
                 onClick={() => {
                     if (isPaused) {
@@ -106,15 +87,9 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                     }
                 }}
                 icon={isPaused ? "play" : "pause"}
-                minimal
-                small
-                intent={Intent.WARNING}
-                title={isPaused ? "Run Sim" : "Pause Sim"}
             />
-            <Button
+            <ToolBarButton
                 text={"Add -Y velocity"}
-                data-element-id="run-test-button"
-                disabled={false}
                 onClick={() => {
                     modelStore.updateAll((modelState: ModelState) => {
                         for (let p of modelState.planets) {
@@ -125,24 +100,16 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                     });
                 }}
                 icon="arrow-down"
-                minimal
-                small
-                intent={Intent.WARNING}
-                title={"Add -Y velocity"}
             />
-            <Button
+            <ToolBarButton
                 text={"Add new planet"}
-                data-element-id="add-vec-button"
                 disabled={false}
                 onClick={() => {
                     modelStore.addRandomPlanet(universeWidth, universeHeight);
                 }}
                 icon="plus"
-                minimal
-                small
-                intent={Intent.WARNING}
-                title={"Add new planet"}
             />
+
             <Switch label="Show Stars" checked={showStars} onChange={mainStore.toggleShowStars} />
             <Switch label="Show trails" checked={showTails} onChange={mainStore.toggleShowTails} />
             <Switch label={tailsRelativeToReferencePlanet ? "Center is reference frame" : "Stars are reference frame"}
@@ -155,18 +122,19 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                         mainStore.setTailsRelativeToReferencePlanet();
                     }
             }} />
-            {/* <Switch label="Show display" checked={displayIsVisible} onChange={() => {
-                if (displayIsVisible) {
-                    mainStore.hideDisplay();
-                }
-                else {
-                    mainStore.showDisplay();
-                }
-            }} /> */}
-            {/* <Switch label="List dead planets" checked={showDeadPlanets} onChange={() => {
-                    mainStore.setShowDeadPlanets(!showDeadPlanets);
-            }} /> */}
-            {/* <BasicDataTableDisplay model={periodicModelState}/> */}
+
+            {/* <ToolBarButton
+                text={currentDisplay === Displays.SOLAR ? "Show Data Table" : "Show Solar Sim"}
+                disabled={false}
+                onClick={() => {
+                    if (currentDisplay === Displays.SOLAR) {
+                        mainStore.showDataDisplay();
+                    }
+                    else {
+                        mainStore.showSolarDisplay();
+                    }
+                }}
+            /> */}
         </div>
     );
 }
