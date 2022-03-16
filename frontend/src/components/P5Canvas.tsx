@@ -8,7 +8,7 @@ import { Vector2d } from "../types/Vector2d";
 import { mainStore } from '../stores/MainStore';
 import { modelStore, AreaInBounds } from '../stores/ModelStore';
 import { useBehavior } from '../hooks/useBehavior';
-import { asTwoDigitStr, getMilliseconds, getRandomInt, mod } from "../util";
+import { asTwoDigitStr, getMilliseconds, getRandomInt, mod, safeStringify } from "../util";
 
 
 import '../css/p5canvas.css';
@@ -126,8 +126,9 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
 
 
         if (showTails) {
-            let prevHistorySlice = modelState.history[1];
-            for (let i = 2; i < modelState.history.length; i++) {
+            // let prevHistorySlice = modelState.history[0];
+            let prevHistorySlice = null;
+            for (let i = 0; i < modelState.history.length; i++) {
 
 
                 let historySlice = modelState.history[i];
@@ -150,14 +151,20 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
                         continue;
                     }
                     let maxTrailWidth = planet.radius()*scale*0.6;
-                    let trailScalingFactor = i/modelState.history.length;
+                    let trailScalingFactor = (modelState.history.length - i)/modelState.history.length;
                     trailScalingFactor*=trailScalingFactor;
                     trailScalingFactor*=trailScalingFactor;
                     trailScalingFactor*=trailScalingFactor;
                     p5.strokeWeight(0.1 + maxTrailWidth*trailScalingFactor);
                     // let pos = historySlice.get(planetID);
                     // for (const [planetID, pos] of historySlice.entries()) {
-                    let p1 = prevHistorySlice.get(planetID); // same planet, just last frame.
+                    let p1 = null;
+                    if (prevHistorySlice) {
+                        p1 = prevHistorySlice.get(planetID); // same planet, just last frame.
+                    }
+                    else {
+                        p1 = planet.pos;
+                    }
                     // console.log(p1, pos, (!p1 || ! pos));
                     if (!p1 || ! pos) {
                         break;
@@ -338,6 +345,37 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     }
 
 
+    const onMouseWheel = (event: any) => {
+        let delta = 0;
+        // All of these should exist, looking at the documentation and source code, and yet for some reason here on linux firefox, only the last one does.
+        if (event.delta) {
+            delta = event.delta;
+        }
+        else if (event.deltaY) {
+            delta = event.deltaY;
+        }
+        else if (event._mouseWheelDeltaY) {
+            delta = event._mouseWheelDeltaY;
+        }
+        // console.log(typeof onMouseWheel)
+        // console.log(event.delta);
+        // console.log(event.deltaY);
+        // console.log(event._mouseWheelDeltaY); // Why
+        // console.log(safeStringify(event));
+        // let newScale = scale + (-1*delta)/800; // for clarity.
+        let newScale = scale + (-1*delta)/800; // for clarity.
+        if (delta > 0) {
+            newScale = scale * 0.9;
+        }
+        else {
+            newScale = scale * 1.1;
+        }
+        if (newScale > 0.5 && newScale < 50) {
+            setScale(newScale);
+        }
+    }
+
+
     return (
             <Measure
                 bounds
@@ -373,7 +411,10 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
             >
                 {({ measureRef }) => (
                     <div className="p5canvas_div_wrapper" ref={measureRef}>
-                        <Sketch className="p5canvas" setup={setup} draw={draw} mousePressed={onMousePress} mouseReleased={onMouseRelease}/>
+                        <Sketch className="p5canvas" setup={setup} draw={draw}
+                            mousePressed={onMousePress}
+                            mouseReleased={onMouseRelease}
+                            mouseWheel={onMouseWheel}/>
                     </div>
                 )}
             </Measure>

@@ -3,6 +3,7 @@ import React, { Component, useContext, useEffect, useState } from "react";
 import { ModelState } from "../types/Model";
 import { Vector2d } from "../types/Vector2d";
 import { Planet } from "../types/Planet";
+import { safeStringify } from "../util";
 import { mainStore } from '../stores/MainStore';
 import { modelStore } from '../stores/ModelStore';
 import { useBehavior } from '../hooks/useBehavior';
@@ -14,21 +15,6 @@ export interface DataTableProps {
     model: ModelState
 }
 
-function safeStringify(obj: any, indent: any = 2) {
-  let cache: any = [];
-  const retVal: any = JSON.stringify(
-    obj,
-    (key: any, value: any) =>
-      typeof value === "object" && value !== null
-        ? cache.includes(value)
-          ? undefined // Duplicate reference found, discard key
-          : cache.push(value) && value // Store value in our collection
-        : value,
-    indent
-  );
-  cache = null;
-  return retVal;
-};
 
 
 const _DataTable: React.FC<DataTableProps> = (props) => {

@@ -80,9 +80,11 @@ export class ModelController {
             newSliceOfHistory.set(p1.id, p1.pos.copy());
         });
 
-        model.history.push(newSliceOfHistory);
-        if (model.history.length > 500) {
-            model.history.splice(0, 1);
+        // model.history.push(newSliceOfHistory);
+        model.history = [newSliceOfHistory].concat(model.history);
+        let maxLength = 500;
+        if (model.history.length > maxLength) {
+            model.history.splice(maxLength-1, maxLength);
         }
 
 

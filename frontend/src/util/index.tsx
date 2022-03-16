@@ -57,6 +57,22 @@ export function mod(n: number, m: number) {
 }
 
 
+export function safeStringify(obj: any, indent: any = 2) {
+  let cache: any = [];
+  const retVal: any = JSON.stringify(
+    obj,
+    (key: any, value: any) =>
+      typeof value === "object" && value !== null
+        ? cache.includes(value)
+          ? undefined // Duplicate reference found, discard key
+          : cache.push(value) && value // Store value in our collection
+        : value,
+    indent
+  );
+  cache = null;
+  return retVal;
+};
+
 
 
 export type TypeGuard<T> = (value: unknown) => value is T;
