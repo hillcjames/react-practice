@@ -123,12 +123,12 @@ export class ModelController {
 
         let momentumSurvivor = Vector2d.scaled(survivor.v, survivor.mass);
         let momentumCasualty = Vector2d.scaled(casualty.v, casualty.mass);
-        console.log(survivor.v, casualty.v);
-        console.log(momentumSurvivor, momentumCasualty);
+        // console.log(survivor.v, casualty.v);
+        // console.log(momentumSurvivor, momentumCasualty);
 
         momentumSurvivor.add(momentumCasualty);
         survivor.v = Vector2d.scaled(momentumSurvivor, 1/(survivor.mass + casualty.mass));
-        console.log("   ", momentumSurvivor, survivor.v);
+        // console.log("   ", momentumSurvivor, survivor.v);
 
         casualty.dead = true;
         survivor.mass += casualty.mass;

@@ -48,7 +48,8 @@ export class ModelStore {
         //     new Planet("Eps", -80, 0, 100, 0, 0.85)
         // ];
         //
-        this.sol = new Planet("Sol", 0, 0, 100000);
+        // this.sol = new Planet("Sol", 0, 0, 100000);
+        this.sol = new Planet("Sol", 0, 0, 100000, 0, -0.05);
 
         this.initialPlanetList = [
             this.sol,
@@ -141,7 +142,6 @@ export class ModelStore {
     }
     removePlanet = (id: string) => {
         let oldState = this.modelState$.getValue();
-        console.log("Before: ", oldState.planets.length)
         let planets = oldState.planets.filter((p: Planet) => p.id !== id);
 
         this.pushUpdateFromSim();

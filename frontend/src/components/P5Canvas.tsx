@@ -44,6 +44,8 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     const [newPlanetDrawingStarted, setNewPlanetDrawingStarted] = useState(false);
     const [shouldPlayAfterRelease, setShouldPlayAfterRelease] = useState(false);
 
+    // console.log("Here#");
+    let smoothedFps = 30;
 
     useEffect(() => {
         console.log("Re-rendering canvas (This shouldn't happen after startup)");
@@ -134,11 +136,14 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
                 let historySlice = modelState.history[i];
                 let refPlanetPosThisSlice = historySlice.get(planetOfReference.id);
                 // console.log(planetOfReference.name, !refPlanetPosThisSlice)
-                if (!refPlanetPosThisSlice) {
-                    refPlanetPosThisSlice = neutralOffset;
+                let offsetThisSlice;
+                if (refPlanetPosThisSlice) {
+                    offsetThisSlice = getOffset(refPlanetPosThisSlice);
+                }
+                else {
+                    offsetThisSlice = neutralOffset;
                 }
 
-                let offsetThisSlice = getOffset(refPlanetPosThisSlice);
 
                 if (!tailsRelativeToReferencePlanet) {
                     offsetThisSlice = neutralOffset;
@@ -219,8 +224,12 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
 
 
 
-        // p5.fill(128);
-        // p5.ellipse(offset.x, offset.y, 4, 4);
+        p5.fill(50);
+        let fps = 1000/tempFrameTime;
+        smoothedFps += fps * 0.05;
+        smoothedFps *= 0.95;
+        p5.text(""+Math.floor(smoothedFps), 10, 10, 70, 80);
+        p5.fill(255);
     }
 
 
@@ -231,6 +240,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     const physicsSpeed: number = useBehavior(modelStore.physicsSpeed);
 
     let currentTime: number = getMilliseconds();
+    let tempFrameTime = 0;
     let accumulator: number = 0;
 
     let generalUpdateAccumulator = 0;
@@ -238,6 +248,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     const draw = (p5: p5Types) => {
         let newTime = getMilliseconds();
         let frameTime = newTime - currentTime;
+        tempFrameTime = frameTime;
         currentTime = newTime;
 
         accumulator += frameTime;
