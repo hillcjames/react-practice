@@ -1,0 +1,16 @@
+
+# HTTP
+# should only need to be run once, to allow connection on regular port.
+# NO LONGER USE THIS! No longer needed, using nginx. Keeping fo reference though, it's useful.
+# sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000
+
+
+# HTTPS
+https://certbot.eff.org/instructions?ws=other&os=arch
+
+
+pm2 serve ~/solar/current-snapshot/build/ 3000 --name "solar-current"
+
+
+
+sudo npm i -g pm2
