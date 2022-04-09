@@ -1,6 +1,6 @@
 // import { useCallback, useMemo, useState } from "react";
 
-import { modelStore, AreaInBounds } from '../stores/ModelStore';
+import { modelStore, AreaInBounds, TailLength } from '../stores/ModelStore';
 import { Planet } from "../types/Planet";
 import { Vector2d } from "../types/Vector2d";
 // import { getAPI } from "../apis/interface";
@@ -12,6 +12,7 @@ export type ModelState = {
     planets: Planet[];
     // planets: Map<string, Planet>;
     history: Map<string, Vector2d>[];
+    maxHistoryLength: typeof TailLength.NONE;
 }
 
 // static class
@@ -80,11 +81,16 @@ export class ModelController {
             newSliceOfHistory.set(p1.id, p1.pos.copy());
         });
 
-        // model.history.push(newSliceOfHistory);
-        model.history = [newSliceOfHistory].concat(model.history);
-        let maxLength = 500;
+        // If the maxlength changes, remove two things until the length maximum is met
+
+        let maxLength = model.maxHistoryLength.value;
         if (model.history.length > maxLength) {
-            model.history.splice(maxLength-1, maxLength);
+            model.history.splice(model.history.length-2, model.history.length);
+        }
+
+        model.history = [newSliceOfHistory].concat(model.history);
+        if (model.history.length > maxLength) {
+            model.history.splice(model.history.length-1, model.history.length);
         }
 
 

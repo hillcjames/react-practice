@@ -1,6 +1,8 @@
 import { BehaviorSubject } from "rxjs";
 import { asBehavior } from "../util";
 
+import { TailLength } from "./ModelStore";
+
 // import { themeApi } from "../api/clients/ThemeAPI";
 // import { DARK_THEME } from "../constants";
 // import { isBlank } from "../utility";
@@ -9,6 +11,7 @@ export const Displays = {
     SOLAR: "SOLAR",
     DATA: "DATA"
 }
+
 
 // think up a better name sometime. This is a store for navigation, what screen you're on, what panels are showing.
 export class MainStore {
@@ -55,10 +58,6 @@ export class MainStore {
     private readonly showDeadPlanets$ = new BehaviorSubject(true);
     showDeadPlanets = () => asBehavior(this.showDeadPlanets$);
     setShowDeadPlanets = (show: boolean) => this.showDeadPlanets$.next(show);
-
-    private readonly showTails$ = new BehaviorSubject(true);
-    showTails = () => asBehavior(this.showTails$);
-    toggleShowTails = () => this.showTails$.next(!this.showTails$.getValue());
 
     private readonly showStars$ = new BehaviorSubject(true);
     showStars = () => asBehavior(this.showStars$);

@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Intent, IconName } from "@blueprintjs/core";
 
-import '../css/Body.css';
+import '../css/ToolPaneButton.css';
 
 
 export interface ToolBarButtonProps {
@@ -15,13 +15,15 @@ export interface ToolBarButtonProps {
 const _ToolBarButton: React.FC<ToolBarButtonProps> = (props) => {
     return (
         <Button
+            className="toolpane-button"
             text={props.text}
             onClick={props.onClick}
-            minimal
-            small
-            intent={Intent.WARNING}
-            title={props.text}
-            data-element-id={props.data_element_id}
+            // minimal
+            // small
+            large
+            intent={Intent.PRIMARY}
+            // title={props.text}
+            // data-element-id={props.data_element_id}
             icon={props.icon as IconName}
         />
     );

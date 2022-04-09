@@ -38,8 +38,8 @@ const _Display: React.FC<DisplayProps> = (props: DisplayProps) => {
 
 
     return (
-    <div className="Display">
-        <div  style={{display: currentDisplay === Displays.SOLAR ? "block" : "none"}}>
+    <div className="display-outer-block">
+        <div className="display" style={{display: currentDisplay === Displays.SOLAR ? "block" : "none"}}>
             <SolarSystemDisplay />
         </div>
         {/* {!isDisplayOpen ? <BasicDataTableDisplay model={periodicModelState} */}

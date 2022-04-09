@@ -7,10 +7,18 @@ import { Planet, planetFromJSONObject } from '../types/Planet';
 import { Vector2d } from '../types/Vector2d';
 import { getMilliseconds } from '../util';
 
+export const TailLength = {
+    NONE: {name: "NONE", value: 0},
+    SHORT: {name: "SHORT", value: 30},
+    LONG: {name: "LONG", value: 400}
+}
+
+
 export const initialModelState: ModelState = {
     planets: [],
     // planets: new Map<string, Planet>(),
-    history: []
+    history: [],
+    maxHistoryLength: TailLength.LONG
 }
 
 
@@ -49,7 +57,7 @@ export class ModelStore {
         // ];
         //
         // this.sol = new Planet("Sol", 0, 0, 100000);
-        this.sol = new Planet("Sol", 0, 0, 100000, 0, -0.05);
+        this.sol = new Planet("Sol", 0, 0, 100000, 0, -0.04);
 
         this.initialPlanetList = [
             this.sol,
@@ -62,7 +70,6 @@ export class ModelStore {
 
             new Planet("Alph", -10, 0, 100, 0, 4),
             new Planet("Bet", -20, 0, 100, 0, 3.2),
-            // new Planet("Gam", -20, 0, 1000, 0, 2.2),
             new Planet("Gam", -20, 0, 1000, 0, 2.2),
             new Planet("Delt", -30, 0, 100, 0, 1.5),
             new Planet("Eps", -50, 0, 100, 0, 1.25),
@@ -151,6 +158,11 @@ export class ModelStore {
         let state = this.modelState$.getValue();
         return this.modelState$.next({...state, history: []});
     }
+    setHistoryLength = (histLength: typeof TailLength.NONE) => {
+        let state = this.modelState$.getValue();
+        return this.modelState$.next({...state, maxHistoryLength: histLength});
+    }
+
 
     resetView = () => {
         this.updatePlanetOfReference(this.centerFlyweight);

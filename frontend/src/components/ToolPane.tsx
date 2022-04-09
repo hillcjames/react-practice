@@ -1,15 +1,17 @@
 import React, { Component, useContext, useEffect, useState } from "react";
-import { Button, Intent, Switch } from "@blueprintjs/core";
+import { Button, Intent, Radio, RadioGroup, Switch } from "@blueprintjs/core";
 
 // import TestComponent from './TestComponent';
-import ToolBarButton from './ToolBarButton';
+import ToolPaneButton from './ToolPaneButton';
 
 import { useToggleable } from "../hooks/useToggleable";
 import { useBehavior } from '../hooks/useBehavior';
 // import { SendRequestButton } from "./SendRequestButton";
 import { mainStore, Displays } from '../stores/MainStore';
-import { modelStore } from '../stores/ModelStore';
+import { modelStore, TailLength } from '../stores/ModelStore';
 import { ModelState } from "../types/Model";
+import { handleStringChange } from "../util";
+
 
 import '../css/Body.css';
 import '../css/ToolPane.css';
@@ -28,7 +30,7 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
     const universeWidth = useBehavior(mainStore.universeWidth);
     const universeHeight = useBehavior(mainStore.universeHeight);
 
-    const showTails = useBehavior(mainStore.showTails);
+    const modelState = useBehavior(modelStore.modelState);
     const showStars = useBehavior(mainStore.showStars);
 
     const tailsRelativeToReferencePlanet = useBehavior(mainStore.tailsRelativeToReferencePlanet);
@@ -36,46 +38,8 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
 
     return (
         <div className="ToolPane">
-            {/* <img src={logo} className="Body-logo" alt="logo" /> */}
-            <p>
-              This is a ToolPane!
-            </p>
 
-            {/* <SendRequestButton
-                isVisible={sendRequestButton.isVisible}
-                isDisabled={false}
-                onClick={() => {
-                    modelContext.addNewBody();
-                    modelContext.value += 1;
-                }}
-            /> */}
-            <Button
-                text={"Reset Viewing Area"}
-                data-element-id="reset-view-button"
-                disabled={false}
-                onClick={() => {
-                    modelStore.resetView();
-                }}
-                icon="reset"
-                minimal
-                small
-                intent={Intent.WARNING}
-                title={"Reset Viewing Area"}
-            />
-            <ToolBarButton
-                text={"Load Preset"}
-                onClick={() => {
-                    modelStore.loadPresetSolarSystem();
-                }}
-            />
-            <ToolBarButton
-                text={"Clear Solar System"}
-                onClick={() => {
-                    modelStore.resetSolarSystem();
-                }}
-            />
-
-            <ToolBarButton
+            <ToolPaneButton
                 text={isPaused ? "Run Sim" : "Pause Sim"}
                 disabled={false}
                 onClick={() => {
@@ -88,20 +52,22 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 }}
                 icon={isPaused ? "play" : "pause"}
             />
-            <ToolBarButton
-                text={"Add -Y velocity"}
+
+
+            <ToolPaneButton
+                text={"Reset"}
                 onClick={() => {
-                    modelStore.updateAll((modelState: ModelState) => {
-                        for (let p of modelState.planets) {
-                            if (p.name !== "Sol") {
-                                p.v.y += 0.3;
-                            }
-                        }
-                    });
+                    modelStore.loadPresetSolarSystem();
                 }}
-                icon="arrow-down"
             />
-            <ToolBarButton
+            <ToolPaneButton
+                text={"Clear Solar System"}
+                onClick={() => {
+                    modelStore.resetSolarSystem();
+                }}
+            />
+
+            <ToolPaneButton
                 text={"Add new planet"}
                 disabled={false}
                 onClick={() => {
@@ -110,10 +76,46 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 icon="plus"
             />
 
+            <ToolPaneButton
+                text={"Reset Viewing Area"}
+                onClick={() => {
+                    modelStore.resetView();
+                }}
+                icon="reset"
+            />
+
+
+
+
             <Switch label="Show Stars" checked={showStars} onChange={mainStore.toggleShowStars} />
-            <Switch label="Show trails" checked={showTails} onChange={mainStore.toggleShowTails} />
+            <RadioGroup
+                label="Show trails"
+                name="group"
+                onChange={handleStringChange((value: any) => {
+                    console.log(value);
+                    switch(value) {
+                        case TailLength.NONE.name:
+                            modelStore.setHistoryLength(TailLength.NONE);
+                            modelStore.clearHistory();
+                            break;
+                        case TailLength.SHORT.name:
+                            modelStore.setHistoryLength(TailLength.SHORT);
+                            break;
+                        case TailLength.LONG.name:
+                            modelStore.setHistoryLength(TailLength.LONG);
+                            break;
+                    }
+                    // mainStore.handleTailLengthChange(value);
+                })}
+                selectedValue={modelState.maxHistoryLength.name}
+            >
+                <Radio label={TailLength.NONE.name} value={TailLength.NONE.name} />
+                <Radio label={TailLength.SHORT.name} value={TailLength.SHORT.name} />
+                <Radio label={TailLength.LONG.name} value={TailLength.LONG.name} />
+            </RadioGroup>
+
             <Switch label={tailsRelativeToReferencePlanet ? "Center is reference frame" : "Stars are reference frame"}
-                disabled={!showTails}
+                // disabled={!tailLength}
                 checked={tailsRelativeToReferencePlanet} onChange={() => {
                     if (tailsRelativeToReferencePlanet) {
                         mainStore.setTailsRelativeTostars();
@@ -123,7 +125,7 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                     }
             }} />
 
-            {/* <ToolBarButton
+            {/* <ToolPaneButton
                 text={currentDisplay === Displays.SOLAR ? "Show Data Table" : "Show Solar Sim"}
                 disabled={false}
                 onClick={() => {

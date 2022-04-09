@@ -5,14 +5,18 @@
   margin-top: 0;
 }
 
-.Header-logo {
+.Header-logo1,
+.Header-logo2 {
   height: 10vmin;
   pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .Header-logo {
-    animation: Header-logo-spin infinite 20s linear;
+  .Header-logo1 {
+    animation: Header-logo-spin infinite 2s linear;
+  }
+  .Header-logo2 {
+    animation: Header-logo-spin infinite 5s linear;
   }
 }
 
@@ -33,4 +37,31 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+.logo-container {
+  width: 10vh;
+  height: 10vh;
+  position: relative;
+}
+.logo1 {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.logo2 {
+  width: 90%;
+  height: 90%;
+  position: absolute;
+  top: 0.25vh;
+  left: 0.25vh;
+  z-index: 10;
+}
+
+.title-text {
+  margin-top: 1.5vh;
+  margin-left: 9vh;
 }

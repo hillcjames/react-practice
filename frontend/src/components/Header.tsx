@@ -1,6 +1,9 @@
 import * as React from "react";
 
-import logo from '../icons/logo.svg';
+import reactLogo from '../icons/logo.svg';
+import customLogo from '../icons/spinningIcon.png';
+import rbitalPlayground from '../icons/rbitalPlayground.png';
+
 import '../css/Header.css';
 
 // export interface HeaderProps {
@@ -14,9 +17,12 @@ const _Header: React.FC<{}> = () => {
     return (
     <div className="Header">
       <header className="Header-header">
-        <img src={logo} className="Header-logo" alt="logo" />
-        <p>
-          This is a header!
+        <div className="logo-container">
+          <img src={customLogo} className="Header-logo1 logo1" alt="logo" />
+          <img src={customLogo} className="Header-logo2 logo2" alt="logo" />
+          <img src={rbitalPlayground} className="title-text" alt="logo" />
+        </div>
+        <p className="title">
         </p>
       </header>
     </div>

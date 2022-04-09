@@ -1,3 +1,4 @@
+import React from "react";
 import { isArray } from "lodash";
 // import { default as _uuid } from "uuid/v4";
 import { v4 as _uuid } from 'uuid';
@@ -5,6 +6,12 @@ import { BehaviorSubject, Observable } from "rxjs";
 
 
 
+
+
+/** Event handler that exposes the target element's value as a string. */
+export function handleStringChange(handler: (value: string) => void) {
+    return (event: React.FormEvent<HTMLElement>) => handler((event.target as HTMLInputElement).value);
+}
 
 export function getTime(): Date {
     return new Date();

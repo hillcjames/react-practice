@@ -5,8 +5,8 @@ import Measure from "react-measure";
 
 import { Planet } from "../types/Planet";
 import { Vector2d } from "../types/Vector2d";
-import { mainStore } from '../stores/MainStore';
-import { modelStore, AreaInBounds } from '../stores/ModelStore';
+import { mainStore, Displays } from '../stores/MainStore';
+import { modelStore, AreaInBounds, TailLength } from '../stores/ModelStore';
 import { useBehavior } from '../hooks/useBehavior';
 import { asTwoDigitStr, getMilliseconds, getRandomInt, mod, safeStringify } from "../util";
 
@@ -36,9 +36,9 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     const modelState = useBehavior(modelStore.modelState);
     const planetOfReference = useBehavior(modelStore.planetOfReference);
     const isSimPaused = useBehavior(modelStore.isSimPaused);
-    const showTails = useBehavior(mainStore.showTails);
     const showStars = useBehavior(mainStore.showStars);
     const tailsRelativeToReferencePlanet = useBehavior(mainStore.tailsRelativeToReferencePlanet);
+    const currentDisplay = useBehavior(mainStore.currentDisplay);
 
 
     const [newPlanetDrawingStarted, setNewPlanetDrawingStarted] = useState(false);
@@ -49,8 +49,9 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
 
     useEffect(() => {
         console.log("Re-rendering canvas (This shouldn't happen after startup)");
-        for (let i = 0; i < 50; i++) {
-            stars.push( new Vector2d(getRandomInt(2000), getRandomInt(2000)) );
+        let spread = 4000;
+        for (let i = 0; i < 1000; i++) {
+            stars.push( new Vector2d(getRandomInt(spread)-spread/2, getRandomInt(spread)-spread/2) );
         }
     }, []);
 
@@ -111,26 +112,31 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
         if (showStars) {
             p5.strokeWeight(1);
             let frequency = 80;
-            for (let star of stars) {
-                if (getRandomInt(frequency) === 1) {
-                    star.x += 0.5;
-                }
-                if (getRandomInt(frequency) === 1) {
-                    star.y += 0.5;
-                }
+            let starToShift = stars[getRandomInt(stars.length)];
+            let shiftAmnt = 0.2/scale;
+            if (getRandomInt(frequency) === 1) {
+                starToShift.x += (getRandomInt(1)*2-1) * shiftAmnt;
+            }
+            if (getRandomInt(frequency) === 1) {
+                starToShift.y += (getRandomInt(1)*2-1) * shiftAmnt;
+            }
 
-                let x = mod(star.x + neutralOffset.x, width);
-                let y = mod(star.y + neutralOffset.y, height);
+            for (let star of stars) {
+                let x = star.x*scale + neutralOffset.x;
+                let y = star.y*scale + neutralOffset.y;
 
                 p5.point(x, y);
             }
         }
 
 
-        if (showTails) {
+        if ((modelState.maxHistoryLength !== TailLength.NONE) && (currentDisplay === Displays.SOLAR)) {
             // let prevHistorySlice = modelState.history[0];
             let prevHistorySlice = null;
-            for (let i = 0; i < modelState.history.length; i++) {
+            // p5.stroke(155,255,255,20);
+            let historyLength = modelState.history.length;
+            // let historyLength = modelState.history.length < modelState.maxHistoryLength.value ? modelState.history.length : modelState.maxHistoryLength.value;
+            for (let i = 0; i < historyLength; i++) {
 
 
                 let historySlice = modelState.history[i];
@@ -156,25 +162,34 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
                         continue;
                     }
                     let maxTrailWidth = planet.radius()*scale*0.6;
-                    let trailScalingFactor = (modelState.history.length - i)/modelState.history.length;
-                    trailScalingFactor*=trailScalingFactor;
-                    trailScalingFactor*=trailScalingFactor;
-                    trailScalingFactor*=trailScalingFactor;
-                    p5.strokeWeight(0.1 + maxTrailWidth*trailScalingFactor);
+                    let trailScalingFactor = (historyLength - i)/historyLength;
+                    // trailScalingFactor = Math.pow(trailScalingFactor, 8);
+                    let sqrdTrailScalingFactor = trailScalingFactor*trailScalingFactor;
+                    sqrdTrailScalingFactor*=sqrdTrailScalingFactor;
+                    sqrdTrailScalingFactor*=sqrdTrailScalingFactor;
+                    p5.strokeWeight(0.101 + maxTrailWidth*sqrdTrailScalingFactor);
+                    p5.stroke(255,255,255, 50 + 205 * trailScalingFactor);
                     // let pos = historySlice.get(planetID);
                     // for (const [planetID, pos] of historySlice.entries()) {
+                    // console.log("Prev planet position ", !prevHistorySlice, planet.pos, planet.name);
                     let p1 = null;
                     if (prevHistorySlice) {
                         p1 = prevHistorySlice.get(planetID); // same planet, just last frame.
+                        // console.log("prevPlanetPos", planetID, planet.name, p1);
                     }
                     else {
                         p1 = planet.pos;
+                        // console.log("currentPlanetPos", planetID, planet.name, p1);
                     }
-                    // console.log(p1, pos, (!p1 || ! pos));
+                    // console.log(p1, pos, (!p1 || ! pos), "\n\n");
                     if (!p1 || ! pos) {
                         break;
                     }
                     let p2 = pos;
+                    if ((Math.abs(p1.x*scale + offsetThisSlice.x - (p2.x*scale + offsetThisSlice.x)) < 0.1) && (Math.abs(p1.y*scale + offsetThisSlice.y - (p2.y*scale + offsetThisSlice.y)) < 0.1)) {
+                        // console.log(p1, p2, offsetThisSlice);
+
+                    }
                     p5.line(p1.x*scale + offsetThisSlice.x, p1.y*scale + offsetThisSlice.y, p2.x*scale + offsetThisSlice.x, p2.y*scale + offsetThisSlice.y);
 
                 }
@@ -185,6 +200,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
                 prevHistorySlice = historySlice;
             }
 
+            p5.stroke(255,255,255,255);
         }
 
         if (clickStartLoc) {
@@ -207,6 +223,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
             p5.line(boundsArea[i].x * scale + neutralOffset.x, boundsArea[i].y * scale + neutralOffset.y,
                 boundsArea[(i+1)%boundsArea.length].x * scale + neutralOffset.x, boundsArea[(i+1)%boundsArea.length].y * scale + neutralOffset.y);
         }
+        p5.strokeWeight(1);
 
 
         for (let planet of modelState.planets) {
@@ -215,21 +232,27 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
                 p5.fill(60,10,10)
             }
             else {
-                p5.fill(255);
+                p5.fill(255,255,255,200);
             }
-            p5.strokeWeight(1);
             p5.ellipse(planet.pos.x*scale + neutralOffset.x, planet.pos.y*scale + neutralOffset.y, planet.radius()*scale, planet.radius()*scale);
         }
-        p5.fill(255);
+        p5.fill(255,255,255,255);
 
 
 
-        p5.fill(50);
-        let fps = 1000/tempFrameTime;
-        smoothedFps += fps * 0.05;
-        smoothedFps *= 0.95;
-        p5.text(""+Math.floor(smoothedFps), 10, 10, 70, 80);
-        p5.fill(255);
+        if (true) {
+            p5.fill(100);
+            p5.stroke(100);
+            let fps = 1000/tempFrameTime;
+            smoothedFps += fps * 0.05;
+            smoothedFps *= 0.95;
+            p5.text("Fps: "+Math.floor(smoothedFps), 10, 10, 70, 80);
+
+            p5.text("Hist: "+ modelState.history.length, 10, 30, 70, 80);
+            p5.text("Max Hist: "+ modelState.maxHistoryLength.value, 10, 50, 100, 80);
+            p5.fill(255);
+            p5.stroke(255);
+        }
     }
 
 
@@ -293,22 +316,35 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
         // }
 
         let closest: Planet | null = null;
-        let bestSqrDist: number = 1000000000000000;
+        // let sqrDistToClosest: number = 1000000000000000;
+        let distToClosest: number = 1000000000000000;
         for (let planet of modelState.planets) {
             if (planet.dead) {
                 continue;
             }
             let pos = new Vector2d(planet.pos.x*scale + offset.x, planet.pos.y*scale + offset.y);
             // console.log(pos, planet.radius()*scale);
-            let sqrDist = Vector2d.squaredDist(pos, mousePos);
-            if (sqrDist < bestSqrDist) {
-                bestSqrDist = sqrDist;
+
+            // let sqrDist = Vector2d.squaredDist(pos, mousePos);
+            // if (sqrDist < sqrDistToClosest) {
+            //     sqrDistToClosest = sqrDist;
+            //     closest = planet;
+            // }
+
+            let dist = Math.sqrt(Vector2d.squaredDist(pos, mousePos)) - planet.radius()/2*scale;
+            // distToClosest = Math.sqrt(sqrDistToClosest);
+            if (dist < distToClosest) {
+                // sqrDistToClosest = dist*dist;
+                distToClosest = dist;
                 closest = planet;
             }
         }
+        // sqrDistToClosest = distToClosest*distToClosest;
 
-        // what if planet is very wide? Take into account radius.
-        if (!closest || (closest && bestSqrDist > (closest.radius()+20)*(closest.radius()+20))) {
+        let clickRangeFromPlanetEdge = 7;
+
+        if (!closest || (closest && distToClosest > clickRangeFromPlanetEdge)) {
+        // if (!closest || (closest && sqrDistToClosest > clickRangeFromPlanetEdge*clickRangeFromPlanetEdge)) {
 
             if (event.mouseButton === "right") {
                 setNewPlanetDrawingStarted(true);
@@ -340,7 +376,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
         let endX = clickStartLoc.x + 0.5*(clickStartLoc.x - event.mouseX);
         let endY = clickStartLoc.y + 0.5*(clickStartLoc.y - event.mouseY);
         let onScreenDist: Vector2d = new Vector2d(endX - clickStartLoc.x, endY - clickStartLoc.y);
-        let v: Vector2d = Vector2d.scaled(onScreenDist, 0.01);
+        let v: Vector2d = Vector2d.scaled(onScreenDist, 0.1);
 
         let neutralOffset = getOffset(planetOfReference.pos);
         let r = getRadiusFromTime(getMilliseconds() - clickStartTime)/scale;
