@@ -87,8 +87,8 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
 
 
 
-            <Switch label="Show Stars" checked={showStars} onChange={mainStore.toggleShowStars} />
             <RadioGroup
+                className={"radio-group"}
                 label="Show trails"
                 name="group"
                 onChange={handleStringChange((value: any) => {
@@ -114,9 +114,12 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                 <Radio label={TailLength.LONG.name} value={TailLength.LONG.name} />
             </RadioGroup>
 
-            <Switch label={tailsRelativeToReferencePlanet ? "Center is reference frame" : "Stars are reference frame"}
+            <Switch
+                className={"toggles"}
+                label={tailsRelativeToReferencePlanet ? "Center is reference frame" : "Stars are reference frame"}
                 // disabled={!tailLength}
-                checked={tailsRelativeToReferencePlanet} onChange={() => {
+                checked={tailsRelativeToReferencePlanet}
+                onChange={() => {
                     if (tailsRelativeToReferencePlanet) {
                         mainStore.setTailsRelativeTostars();
                     }
@@ -124,6 +127,11 @@ const _ToolPane: React.FC<ToolPaneProps> = (props: ToolPaneProps) => {
                         mainStore.setTailsRelativeToReferencePlanet();
                     }
             }} />
+            <Switch
+                className={"toggles"}
+                label="Show Stars"
+                checked={showStars}
+                onChange={mainStore.toggleShowStars} />
 
             {/* <ToolPaneButton
                 text={currentDisplay === Displays.SOLAR ? "Show Data Table" : "Show Solar Sim"}
