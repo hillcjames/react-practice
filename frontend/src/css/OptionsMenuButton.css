@@ -1,0 +1,45 @@
+
+.toggles {
+    margin-left: 3vh;
+    font-size: 2vh;
+}
+.radioGroup {
+    margin-left: 3vh;
+    font-size: 2vh;
+    padding-top: 1vh;
+}
+
+.centeredFullWidth {
+
+}
+
+.optionsButton {
+    width: 100%;
+}
+
+.popover-custom {
+    /* margin-left: 1vh; */
+}
+
+.bp3-popover-target {
+    width: 100%;
+}
+
+/* .bp3-tooltip {
+  .bp3-popover-content {
+      background: #9999;
+  }
+
+  .bp3-popover-arrow-fill {
+    fill: #9999;
+  }
+} */
+
+.bp3-popover .bp3-popover-content {
+    background: #9998 !important;
+    padding-bottom: 0.2vh;
+    padding-right: 2vh;
+}
+.bp3-popover .bp3-popover-arrow-fill {
+    fill: #9999 !important;
+}

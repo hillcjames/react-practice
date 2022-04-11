@@ -59,6 +59,7 @@ export class MainStore {
     showDeadPlanets = () => asBehavior(this.showDeadPlanets$);
     setShowDeadPlanets = (show: boolean) => this.showDeadPlanets$.next(show);
 
+
     private readonly showStars$ = new BehaviorSubject(true);
     showStars = () => asBehavior(this.showStars$);
     toggleShowStars = () => this.showStars$.next(!this.showStars$.getValue());
@@ -67,6 +68,17 @@ export class MainStore {
     tailsRelativeToReferencePlanet = () => asBehavior(this.tailsRelativeToReferencePlanet$);
     setTailsRelativeToReferencePlanet = () => this.tailsRelativeToReferencePlanet$.next(true);
     setTailsRelativeTostars = () => this.tailsRelativeToReferencePlanet$.next(false);
+
+
+    private readonly optionsMenuIsOpen$ = new BehaviorSubject(false);
+    optionsMenuIsOpen = () => asBehavior(this.optionsMenuIsOpen$);
+    openOptionsMenu = () => this.optionsMenuIsOpen$.next(true);
+    closeOptionsMenu = () => this.optionsMenuIsOpen$.next(false);
+
+
+    private readonly extraInfoIsShowing$ = new BehaviorSubject(false);
+    extraInfoIsShowing = () => asBehavior(this.extraInfoIsShowing$);
+    toggleExtraInfo = () => this.extraInfoIsShowing$.next(!this.extraInfoIsShowing$.getValue());
 
     // unused atm, hardcoded.
     // private readonly tailLength$ = new BehaviorSubject(500);

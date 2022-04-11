@@ -40,6 +40,8 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
     const tailsRelativeToReferencePlanet = useBehavior(mainStore.tailsRelativeToReferencePlanet);
     const currentDisplay = useBehavior(mainStore.currentDisplay);
 
+    const extraInfoIsShowing = useBehavior(mainStore.extraInfoIsShowing);
+
 
     const [newPlanetDrawingStarted, setNewPlanetDrawingStarted] = useState(false);
     const [shouldPlayAfterRelease, setShouldPlayAfterRelease] = useState(false);
@@ -240,7 +242,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
 
 
 
-        if (true) {
+        if (extraInfoIsShowing) {
             p5.fill(100);
             p5.stroke(100);
             let fps = 1000/tempFrameTime;
@@ -250,6 +252,7 @@ const _P5Canvas: React.FC<P5CanvasProps> = (props: P5CanvasProps) =>  {
 
             p5.text("Hist: "+ modelState.history.length, 10, 30, 70, 80);
             p5.text("Max Hist: "+ modelState.maxHistoryLength.value, 10, 50, 100, 80);
+            p5.text("Pop: "+ modelState.planets.length, 10, 70, 70, 80);
             p5.fill(255);
             p5.stroke(255);
         }

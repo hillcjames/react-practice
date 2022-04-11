@@ -19,9 +19,17 @@
     margin-left: 3vh;
     font-size: 2vh;
 }
-.radio-group {
+.radioGroup {
     margin-left: 3vh;
     font-size: 2vh;
     margin-top: 2vh;
     margin-bottom: 3vh;
+}
+
+.optionButton {
+  margin-top: auto;
+  margin-bottom: 0.5vh;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
 }

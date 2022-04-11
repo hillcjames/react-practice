@@ -10,12 +10,13 @@ export interface ToolBarButtonProps {
     disabled?: boolean;
     icon?: string;
     data_element_id?: string;
+    className?: string;
 }
 
 const _ToolBarButton: React.FC<ToolBarButtonProps | ButtonProps> = (props) => {
     return (
         <Button
-            className="toolpane-button"
+            className={props.className ? props.className : "toolpane-button"}
             text={props.text}
             onClick={props.onClick}
             // minimal

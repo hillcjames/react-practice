@@ -54,12 +54,12 @@ const _SolarSystemDisplay: React.FC<SolarSystemDisplayProps> = (props) => {
     return (
         <div className="SolarSystemDisplay">
             <P5Canvas onPlanetClick={onPlanetClick} onPlanetRightClick={onPlanetRightClick}/>
-            <div>
-              Solar system population: {headCount}
-              {/* , size: {universeWidth} {universeHeight} */}
-          </div>
         </div>
     );
+  //   <div>
+  //     Solar system population: {headCount}
+  //     {/* , size: {universeWidth} {universeHeight} */}
+  // </div>
 }
 
 

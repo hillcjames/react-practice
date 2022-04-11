@@ -2,7 +2,8 @@ import * as React from "react";
 
 import reactLogo from '../icons/logo.svg';
 import customLogo from '../icons/spinningIcon.png';
-import rbitalPlayground from '../icons/rbitalPlayground.png';
+// import rbitalPlaygroundPng from '../icons/rbitalPlayground.png';
+import rbitalPng from '../icons/rbital.png';
 
 import '../css/Header.css';
 
@@ -20,7 +21,7 @@ const _Header: React.FC<{}> = () => {
         <div className="logo-container">
           <img src={customLogo} className="Header-logo1 logo1" alt="logo" />
           <img src={customLogo} className="Header-logo2 logo2" alt="logo" />
-          <img src={rbitalPlayground} className="title-text" alt="logo" />
+          <img src={rbitalPng} className="title-text" alt="logo" />
         </div>
         <p className="title">
         </p>
